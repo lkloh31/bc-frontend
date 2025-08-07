@@ -1,18 +1,28 @@
 import "./App.css";
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router';
+import Homepage from './components/Homepage';
+import Register from './components/Register';
+import Login from './components/Login';
 
-import { usePage } from "./layout/PageContext";
-
-import Register from "./auth/Register";
-import Login from "./auth/Login";
-import HomePage from "./home/HomePage";
-import Error404 from "./Error404.jsx";
-
-export default function App() {
-  const { page } = usePage();
-
-  if (page === "home") return <HomePage />;
-  if (page === "register") return <Register />;
-  if (page === "login") return <Login />;
-
-  return <Error404 />;
+function App() {
+  return (
+    <Router>
+      <header>
+        <h1>MEV</h1>
+        <nav>
+          <Link to="/">Home</Link>
+          <Link to="/register">Register</Link>
+          <Link to="/login">Login</Link>
+        </nav>
+      </header>
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
+  );
 }
+
+export default App;
+
