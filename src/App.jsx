@@ -6,6 +6,7 @@ import Homepage from "./home/HomePage";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Navbar from "./layout/Navbar";
+import MapPage from "./map/MapPage";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
                 <Route path="/" element={<Homepage />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/map" element={<MapPage />} />
               </Routes>
             </main>
           </div>
