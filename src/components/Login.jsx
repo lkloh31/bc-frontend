@@ -15,7 +15,7 @@ export default function Login() {
     event.preventDefault();
 
     try {
-      await login(email, password);
+      await login({ email, password });
       navigate("/");
     } catch (e) {
       console.error(e);
