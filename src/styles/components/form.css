@@ -84,13 +84,6 @@
   transition: border-color 0.2s ease;
 }
 
-/* .modal-content .faculty-form input:focus,
-.modal-content .faculty-form select:focus {
-  outline: none;
-  border-color: #4caf50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
-} */
-
 .modal-content .faculty-form button {
   padding: 12px 20px;
   background-color: #4caf50;

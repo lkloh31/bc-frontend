@@ -1,28 +1,29 @@
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router';
-import Homepage from './components/Homepage';
-import Register from './components/Register';
-import Login from './components/Login';
+import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { AuthProvider } from "./auth/AuthContext";
+import { ApiProvider } from "./api/ApiContext";
+import Homepage from "./home/HomePage";
+import Register from "./components/Register";
+import Login from "./components/Login";
+import Navbar from "./layout/Navbar";
 
-function App() {
+export default function App() {
   return (
-    <Router>
-      <header>
-        <h1>MEV</h1>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/register">Register</Link>
-          <Link to="/login">Login</Link>
-        </nav>
-      </header>
-      <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <ApiProvider>
+        <Router>
+          <div className="app">
+            <Navbar />
+            <main className="main-content">
+              <Routes>
+                <Route path="/" element={<Homepage />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+              </Routes>
+            </main>
+          </div>
+        </Router>
+      </ApiProvider>
+    </AuthProvider>
   );
 }
-
-export default App;
-

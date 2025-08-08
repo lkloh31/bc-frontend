@@ -1,37 +1,73 @@
-import "../styles/navbar.css";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router";
 import { useAuth } from "../auth/AuthContext";
-import { usePage } from "./PageContext";
+
+import "../styles/components/navbar.css";
+import "../App.css";
 
 export default function Navbar() {
   const { token, logout } = useAuth();
-  const { setPage } = usePage();
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+    setMenuOpen(false);
+  };
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <header className="navbar">
-      <p className="logo" onClick={() => setPage("home")}>
+      <Link to="/" className="logo" onClick={closeMenu}>
         MEV
-      </p>
+      </Link>
 
       <button
         className="menubutton"
         onClick={() => setMenuOpen((prev) => !prev)}
         aria-label="Toggle Menu"
       >
-        <img src="/images/hamburgericon1.png" alt="menu icon" />
+        <span className="hamburger-line"></span>
+        <span className="hamburger-line"></span>
+        <span className="hamburger-line"></span>
       </button>
-      {token ? (
-        <nav className={`nav-links ${menuOpen ? "open" : ""}`}>
-          <a onClick={() => setPage("home")}>Daily dose</a>
-          <a onClick={() => setPage("map")}>Map</a>
-          <a onClick={() => setPage("journal")}>Journal</a>
-          <a onClick={() => setPage("add")}>+</a>
-          <a onClick={logout}>Log out</a>
-        </nav>
-      ) : (
-        <></>
-      )}
+
+      <nav className={`nav-links ${menuOpen ? "open" : ""}`}>
+        <Link to="/" onClick={closeMenu}>
+          Home
+        </Link>
+
+        {token ? (
+          <>
+            <a href="#" onClick={closeMenu}>
+              Daily dose
+            </a>
+            <a href="#" onClick={closeMenu}>
+              Map
+            </a>
+            <a href="#" onClick={closeMenu}>
+              Journal
+            </a>
+            <a href="#" onClick={closeMenu}>
+              +
+            </a>
+            <button onClick={handleLogout} className="nav-logout-btn">
+              Log out
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/register" onClick={closeMenu}>
+              Register
+            </Link>
+            <Link to="/login" onClick={closeMenu}>
+              Login
+            </Link>
+          </>
+        )}
+      </nav>
     </header>
   );
 }

@@ -1,0 +1,88 @@
+.auth-container {
+  width: 350px;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.auth-card {
+  background: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  color: black;
+}
+
+.auth-card h2 {
+  color: black;
+  margin-bottom: 2rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: black;
+  text-align: left;
+}
+
+.form-group input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: white;
+  color: black;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: black;
+}
+
+.auth-form button {
+  padding: 12px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.auth-form button:hover:not(:disabled) {
+  background-color: #333;
+}
+
+.auth-form button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 1rem;
+  color: black;
+}
+
+.auth-link a {
+  color: black;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}

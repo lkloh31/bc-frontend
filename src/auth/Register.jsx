@@ -1,50 +1,84 @@
 import { useState } from "react";
-import { useAuth } from "./AuthContext";
-import { usePage } from "../layout/PageContext";
+import { Link, useNavigate } from "react-router";
+import { useAuth } from "../auth/AuthContext";
 
-/** A form that allows users to register for a new account */
-export default function Register() {
-  const { register } = useAuth();
-  const { setPage } = usePage();
-
+function Register() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const tryRegister = async (formData) => {
-    const name = formData.get("name");
-    const username = formData.get("username");
-    const password = formData.get("password");
+  const { register } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
+
     try {
-      await register({ name, username, password });
-      setPage("daily");
+      await register(name, email, password);
+      navigate("/");
     } catch (e) {
-      setError(e.message);
+      setError(e.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="auth-page">
-      <h1 className="auth-heading">Register</h1>
-      <form className="auth-form" action={tryRegister}>
-        <label>
-          <input type="text" name="name" placeholder="Name" required />
-        </label>
-        <label>
-          <input type="text" name="username" placeholder="Username" required />
-        </label>
-        <label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            required
-          />
-        </label>
-        <button>Register</button>
-        {error && <output>{error}</output>}
-      </form>
-      <a className="auth-link" onClick={() => setPage("login")}>
-        Already have an account? Log in here.
-      </a>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2>Register</h2>
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="name">Name</label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your name"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Registering..." : "Register"}
+          </button>
+
+          {error && <div className="error-message">{error}</div>}
+        </form>
+
+        <p className="auth-link">
+          Already have an account? <Link to="/login">Log in</Link>
+        </p>
+      </div>
     </div>
   );
 }

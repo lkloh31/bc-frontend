@@ -1,0 +1,35 @@
+.homepage {
+  max-width: 600px;
+  text-align: center;
+  padding: 2rem;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.intro-section h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  color: black;
+}
+
+.intro-section h2 {
+  font-size: 1.8em;
+  margin-bottom: 1rem;
+  color: black;
+}
+
+.intro-section h3 {
+  font-size: 1.2em;
+  margin-bottom: 2rem;
+  color: black;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
