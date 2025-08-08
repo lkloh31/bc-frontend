@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../auth/AuthContext";
 
-function Register() {
+export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +18,7 @@ function Register() {
     setError(null);
 
     try {
-      await register(name, email, password);
+      await register({ name, email, password });
       navigate("/");
     } catch (e) {
       setError(e.message || "Registration failed. Please try again.");

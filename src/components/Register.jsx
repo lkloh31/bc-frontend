@@ -16,7 +16,7 @@ export default function Register() {
     event.preventDefault();
 
     try {
-      await register(name, email, password);
+      await register({ name, email, password });
       navigate("/");
     } catch (e) {
       console.error(e);
