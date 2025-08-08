@@ -1,0 +1,73 @@
+/* Make the whole app stretch */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+/* Your app layout shouldn't constrain width */
+.app {
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* If you have a main-content wrapper, let it fill */
+.main-content {
+  width: 100%;
+  max-width: none;
+}
+
+/* The dashboard container MUST be wide so WidthProvider can measure it */
+.dashboard {
+  width: 100%;
+  max-width: none;
+  background: #121212;
+  min-height: 100vh;
+  color: #fff;
+  padding: 0;
+}
+
+/* Ensure the grid itself can expand */
+.dashboard .react-grid-layout {
+  width: 100% !important;
+}
+
+/* Optional card styles (keep if you like) */
+.widget-card { background:#1f1f1f; border-radius:8px; height:100%; display:flex; flex-direction:column; }
+.widget-header { background:#292929; padding:8px 12px; font-weight:600; cursor:move; border-bottom:1px solid #333; }
+.widget-body { flex:1; padding:12px; overflow:auto; }
+
+/* Make room under navbar; stick the toolbar */
+.dashboard-toolbar {
+  position: sticky;
+  top: 56px;              /* set to your navbar height */
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: #121212;
+  border-bottom: 1px solid #222;
+  margin-bottom: 8px;
+}
+
+/* Header cleanup */
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #292929;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: move;
+  border-bottom: 1px solid #333;
+}
+
+.widget-header button {
+  background: transparent;
+  border: 0;
+  color: #bbb;
+  font-size: 14px;
+  cursor: pointer;
+}
+.widget-header button:hover { color: #fff; }
+

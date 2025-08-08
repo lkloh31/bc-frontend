@@ -1,19 +1,22 @@
+// src/layout/Navbar.jsx
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
 import "../styles/components/navbar.css";
 import "../App.css";
 
 export default function Navbar() {
-  const { token, logout } = useAuth();
+  const { token: ctxToken, logout } = useAuth();
+  const token = ctxToken || localStorage.getItem("token");
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
-    navigate("/");
+    logout?.();
+    localStorage.removeItem("token");
     setMenuOpen(false);
+    navigate("/login", { replace: true });
   };
 
   const closeMenu = () => setMenuOpen(false);
@@ -41,18 +44,20 @@ export default function Navbar() {
 
         {token ? (
           <>
-            <a href="#" onClick={closeMenu}>
+            <Link to="/dashboard" onClick={closeMenu}>
+              Dashboard
+            </Link>
+            {/* Stubs you can wire up later */}
+            <Link to="/daily" onClick={closeMenu}>
               Daily dose
-            </a>
-            <a href="#" onClick={closeMenu}>
+            </Link>
+            <Link to="/map" onClick={closeMenu}>
               Map
-            </a>
-            <a href="#" onClick={closeMenu}>
+            </Link>
+            <Link to="/journal" onClick={closeMenu}>
               Journal
-            </a>
-            <a href="#" onClick={closeMenu}>
-              +
-            </a>
+            </Link>
+
             <button onClick={handleLogout} className="nav-logout-btn">
               Log out
             </button>
