@@ -8,7 +8,6 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState();
 
   useEffect(() => {
-
     const storedToken = localStorage.getItem("authToken");
     if (storedToken) {
       setToken(storedToken);
@@ -42,7 +41,6 @@ export function AuthProvider({ children }) {
     setToken(result.token);
 
     localStorage.setItem("authToken", result);
-
   };
 
   const logout = () => {
