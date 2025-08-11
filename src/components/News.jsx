@@ -104,8 +104,9 @@ export default function News() {
 
   return (
     <div className="news-container h-100vh w-full">
+      {/* Navbar */}
       <nav className="flex justify-between p-5 bg-black">
-        <h4 className="text-gray-400 text-2xl font-bold">News</h4>
+        <h4 className="text-gray-400 text-3xl">News</h4>
         <div className="bg-white flex justify-center items-center">
           <input
             type="text"
@@ -126,7 +127,8 @@ export default function News() {
         </div>
       </nav>
 
-      <div className="news-categories w-[1200px] mx-auto mt-[40px]">
+      {/* Categories (sticky right below navbar) */}
+      <div className="news-categories w-full">
         <div className="flex justify-center items-center border-b-1 pb-[10px]">
           {options.map((item) => (
             <div
@@ -142,11 +144,14 @@ export default function News() {
             </div>
           ))}
         </div>
+      </div>
 
+      {/* Articles scroll area */}
+      <div className="articles-wrapper w-[1200px] mx-auto">
         <InfiniteScroll
           dataLength={articles.length}
           next={fetchNews}
-          hasMore={search.toLowerCase() !== "favourites"} // don't infinite load for favourites
+          hasMore={search.toLowerCase() !== "favourites"}
           loader={<h4>Loading...</h4>}
           scrollThreshold={0.9}
         >

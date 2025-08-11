@@ -22,7 +22,7 @@ export default function NewsItems({ articles, toggleFavourite, favourites }) {
               <h4>{item.title}</h4>
               <a
                 href={item.url}
-                className="text-gray-400 underline"
+                className="text-gray-450 underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -31,7 +31,7 @@ export default function NewsItems({ articles, toggleFavourite, favourites }) {
               <button
                 onClick={() => toggleFavourite(item)}
                 className={`ml-2 px-2 py-1 text-sm rounded ${
-                  isFav ? "bg-red-500" : "bg-green-500"
+                  isFav ? "bg-red-500" : "bg-gray-400"
                 }`}
               >
                 {isFav ? "Remove" : "Add"}
