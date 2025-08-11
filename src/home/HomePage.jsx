@@ -10,7 +10,6 @@ export default function Homepage() {
   return (
     <div className="homepage">
       <div className="intro-section">
-        {/* <h1>MEV</h1> */}
         <h2>MEV - a personal curation platform</h2>
         <h3>
           Extracting maximum value from all the content, links, and experiences

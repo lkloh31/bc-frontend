@@ -1,0 +1,32 @@
+.map-page {
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+  gap: 2rem;
+  padding: 1rem;
+  height: 60vh;
+  width: 80vw;
+}
+
+.map-box {
+  border: 1px solid black;
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.map-selection {
+  border: 1px solid black;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -44,9 +44,9 @@ export default function Navbar() {
             <Link to="/daily" onClick={closeMenu}>
               Daily dose
             </Link>
-            <a href="#" onClick={closeMenu}>
+            <Link to="/map" onClick={closeMenu}>
               Map
-            </a>
+            </Link>
             <a href="#" onClick={closeMenu}>
               Journal
             </a>
