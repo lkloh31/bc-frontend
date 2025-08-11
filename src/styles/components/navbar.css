@@ -73,7 +73,7 @@
   transition: 0.3s;
 }
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 800px) {
   .menubutton {
     display: flex;
   }
