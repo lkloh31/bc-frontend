@@ -6,7 +6,12 @@ import Homepage from "./home/HomePage";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Navbar from "./layout/Navbar";
-import MapPage from "./map/MapPage";
+import DailyDose from "./components/Daily";
+import News from "./components/News";
+// import Weather from "./components/Weather";
+// import Currency from "./components/Currency";
+// import Stocks from "./components/Stocks";
+// import MoodOfTheDay from "./components/MoodOfTheDay";
 
 export default function App() {
   return (
@@ -20,7 +25,12 @@ export default function App() {
                 <Route path="/" element={<Homepage />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/map" element={<MapPage />} />
+                <Route path="/daily" element={<DailyDose />} />
+                <Route path="/daily/news" element={<News />} />
+                {/* <Route path="/daily/weather" element={<Weather />} />
+                <Route path="/daily/currency" element={<Currency />} />
+                <Route path="/daily/stocks" element={<Stocks />} />
+                <Route path="/daily/mood" element={<MoodOfTheDay />} /> */}
               </Routes>
             </main>
           </div>
