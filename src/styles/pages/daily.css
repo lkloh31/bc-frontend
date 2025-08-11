@@ -1,0 +1,25 @@
+.daily-dose {
+  max-width: 600px;
+  text-align: center;
+  padding: 2rem;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.daily-dose-links {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 1rem;
+}
+
+.daily-dose-links a {
+  padding: 0.5rem 1rem;
+  background-color: #f0f0f0;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: bg 0.2s;
+}
+
+.daily-dose-links a:hover {
+  background-color: #ddd;
+}
