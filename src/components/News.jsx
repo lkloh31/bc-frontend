@@ -7,6 +7,7 @@ import "../styles/pages/news.css";
 
 export default function News() {
   const options = [
+    "Favourites",
     "Business",
     "Technology",
     "Sports",
@@ -16,10 +17,25 @@ export default function News() {
     "Earth",
   ];
 
-  const [search, setSearch] = useState("latest"); // default search term
+  const [search, setSearch] = useState("latest");
+  const [inputValue, setInputValue] = useState("");
   const [page, setPage] = useState(1);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [favourites, setFavourites] = useState([]);
+
+  // Load favourites from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("favourites");
+    if (saved) {
+      setFavourites(JSON.parse(saved));
+    }
+  }, []);
+
+  // Save favourites to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("favourites", JSON.stringify(favourites));
+  }, [favourites]);
 
   const fetchData = async (searchTerm, pageNum) => {
     setLoading(true);
@@ -39,20 +55,51 @@ export default function News() {
   };
 
   useEffect(() => {
-    if (search) {
-      fetchData(search, page);
+    if (!search) return;
+
+    if (search.toLowerCase() === "favourites") {
+      // Show saved favourites
+      setArticles(favourites);
+      return;
     }
-  }, [search, page]);
+
+    fetchData(search, page);
+  }, [search, page, favourites]);
 
   const searchNews = (term) => {
     const trimmedTerm = term.trim();
+
     setArticles([]);
     setPage(1);
-    setSearch(trimmedTerm === "" ? "latest" : trimmedTerm);
+
+    if (trimmedTerm.toLowerCase() === "favourites") {
+      setSearch("Favourites");
+      setArticles(favourites);
+      setInputValue(""); // Clear input when viewing favourites
+    } else {
+      setSearch(trimmedTerm === "" ? "latest" : trimmedTerm);
+      setInputValue(trimmedTerm === "" ? "" : trimmedTerm);
+    }
   };
 
   const fetchNews = () => {
     setPage((prev) => prev + 1);
+  };
+
+  const toggleFavourite = (article) => {
+    const exists = favourites.some((fav) => fav.url === article.url);
+    let updated;
+    if (exists) {
+      updated = favourites.filter((fav) => fav.url !== article.url);
+    } else {
+      updated = [...favourites, article];
+    }
+    setFavourites(updated);
+
+    // If viewing favourites, update the list shown
+    if (search === "Favourites") {
+      setArticles(updated);
+    }
   };
 
   return (
@@ -62,30 +109,24 @@ export default function News() {
         <div className="bg-white flex justify-center items-center">
           <input
             type="text"
-            value={
-              options.some((opt) => opt.toLowerCase() === search.toLowerCase())
-                ? ""
-                : search === "latest"
-                ? ""
-                : search
-            }
-            onChange={(e) => setSearch(e.target.value)}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                searchNews(e.target.value);
+                searchNews(inputValue);
               }
             }}
             placeholder="Search news..."
             className="w-[300px] h-[30px] bg-white p-2 outline-none"
           />
           <FaSearch
-            onClick={() => searchNews(search)}
+            onClick={() => searchNews(inputValue)}
             className="text-md cursor-pointer"
           />
         </div>
       </nav>
 
-      <div className="w-[1200px] mx-auto mt-[40px]">
+      <div className="news-categories w-[1200px] mx-auto mt-[40px]">
         <div className="flex justify-center items-center border-b-1 pb-[10px]">
           {options.map((item) => (
             <div
@@ -105,22 +146,23 @@ export default function News() {
         <InfiniteScroll
           dataLength={articles.length}
           next={fetchNews}
-          hasMore={true}
+          hasMore={search.toLowerCase() !== "favourites"} // don't infinite load for favourites
           loader={<h4>Loading...</h4>}
-          endMessage={
-            <p style={{ textAlign: "center" }}>
-              <b>No more articles.</b>
-            </p>
-          }
           scrollThreshold={0.9}
         >
           <div className="grid grid-cols-3 gap-5 mt-[40px]">
-            <NewsItems articles={articles} />
+            <NewsItems
+              articles={articles}
+              toggleFavourite={toggleFavourite}
+              favourites={favourites}
+            />
           </div>
         </InfiniteScroll>
 
         {!loading && articles.length === 0 && (
-          <p className="text-center mt-10 text-gray-500">No articles found</p>
+          <div className="min-h-[calc(100vh-200px)] flex justify-center pt-10">
+            <p className="text-center text-gray-500">No articles found</p>
+          </div>
         )}
       </div>
     </div>
