@@ -41,9 +41,9 @@ export default function Navbar() {
 
         {token ? (
           <>
-            <a href="#" onClick={closeMenu}>
+            <Link to="/daily" onClick={closeMenu}>
               Daily dose
-            </a>
+            </Link>
             <Link to="/map" onClick={closeMenu}>
               Map
             </Link>

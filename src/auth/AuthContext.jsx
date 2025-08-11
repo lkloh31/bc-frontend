@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = async (credentials) => {
-    const response = await fetch(API + "/admin/register", {
+    const response = await fetch(API + "/users/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
   };
 
   const login = async (credentials) => {
-    const response = await fetch(API + "/admin/login", {
+    const response = await fetch(API + "/users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
