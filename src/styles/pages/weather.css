@@ -1,0 +1,70 @@
+/* Weather widget card */
+.ww-wrap{width:100%;max-width:720px;margin:0 auto;padding:24px;}
+.ww-card{
+  position:relative;border-radius:24px;padding:20px;
+  background:linear-gradient(180deg,rgba(56,189,248,.28),rgba(99,102,241,.18) 40%,rgba(2,6,23,.6));
+  border:1px solid rgba(255,255,255,.12);box-shadow:0 20px 40px rgba(0,0,0,.25);
+  color:#fff;backdrop-filter:blur(8px);
+  font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji;
+}
+
+/* Top row */
+.ww-top{display:flex;justify-content:space-between;align-items:center;color:rgba(255,255,255,.9)}
+.ww-title{font-weight:600}
+.ww-dot{margin:0 8px}
+.ww-sub{opacity:.8;font-size:14px}
+.ww-refresh{background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer;transition:background .2s}
+.ww-refresh:hover{background:rgba(255,255,255,.2)}
+
+/* Current */
+.ww-current{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;margin-top:18px}
+.ww-temp{font-size:64px;line-height:1;font-weight:600;text-shadow:0 2px 10px rgba(0,0,0,.25)}
+.ww-unit{font-size:20px;vertical-align:super;margin-left:6px}
+.ww-desc{margin-top:6px;display:flex;gap:8px;align-items:center;font-size:18px}
+.ww-feels{margin-top:4px;opacity:.85;font-size:14px}
+.ww-today{justify-self:end;background:rgba(255,255,255,.12);border-radius:18px;padding:12px 14px;min-width:120px}
+.ww-today-title{font-size:11px;text-transform:uppercase;letter-spacing:.06em;opacity:.8;margin-bottom:4px}
+.ww-today-range{font-size:14px}
+
+/* Sections */
+.ww-section{margin-top:18px}
+.ww-section-title{color:rgba(255,255,255,.85);font-size:14px;margin-bottom:8px}
+
+/* Hourly chips */
+.ww-hourly{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.ww-chip{flex:0 0 auto;min-width:68px;border-radius:14px;background:rgba(255,255,255,.12);padding:8px 10px;text-align:center}
+.ww-chip-time{font-size:11px;opacity:.8;margin-bottom:6px}
+.ww-chip-temp{font-size:13px;font-weight:600}
+
+/* 7-day */
+.ww-days{border-radius:14px;background:rgba(255,255,255,.07);overflow:hidden}
+.ww-day{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.08)}
+.ww-day:first-child{border-top:none}
+.ww-day-name{width:56px;opacity:.85;font-size:13px}
+.ww-day-middle{display:flex;align-items:center;gap:8px;flex:1}
+.ww-day-label{opacity:.85;font-size:13px}
+.ww-day-temps{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:13px}
+.ww-day-min{opacity:.85}
+.ww-bar{height:4px;width:96px;background:rgba(255,255,255,.15);border-radius:999px;overflow:hidden}
+.ww-bar-fill{height:100%;background:rgba(255,255,255,.7)}
+
+/* Footer & error */
+.ww-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:rgba(255,255,255,.75);font-size:12px}
+.ww-footer a{color:inherit;text-decoration:underline}
+.ww-error{margin-top:12px;background:rgba(244,63,94,.18);border:1px solid rgba(244,63,94,.35);color:#fecdd3;border-radius:12px;padding:10px}
+
+/* Icons */
+.ww-icon{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.5}
+
+/* Skeletons */
+.ww-skel{opacity:.8;animation:ww-pulse 1.2s ease-in-out infinite}
+.ww-skel-line{height:18px;background:rgba(255,255,255,.12);border-radius:8px}
+.ww-skel-line.small{width:40px;margin:0 auto 8px}
+.ww-skel-line.tiny{width:28px;margin:6px auto 0}
+.ww-skel-circle{width:24px;height:24px;border-radius:999px;background:rgba(255,255,255,.12);margin:6px auto}
+@keyframes ww-pulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+@media (max-width:480px){
+  .ww-temp{font-size:52px}
+  .ww-today{min-width:100px}
+}

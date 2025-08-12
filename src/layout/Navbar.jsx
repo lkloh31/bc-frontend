@@ -59,6 +59,7 @@ export default function Navbar() {
           </>
         ) : (
           <>
+            <Link to="/daily">Daily dose</Link>
             <Link to="/register" onClick={closeMenu}>
               Register
             </Link>
