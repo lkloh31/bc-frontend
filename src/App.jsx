@@ -6,12 +6,13 @@ import Homepage from "./home/HomePage";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Navbar from "./layout/Navbar";
-import DailyDose from "./components/Daily";
+import DailyDose from "./components/DailyDose";
 import News from "./components/News";
-// import Weather from "./components/Weather";
-// import Currency from "./components/Currency";
+import UserWeather from "./components/UserWeather";
+import Exchange from "./components/Exchange";
 // import Stocks from "./components/Stocks";
 // import MoodOfTheDay from "./components/MoodOfTheDay";
+// import Crypto from "./components/Crypto";
 import MapPage from "./map/MapPage";
 // import DailyDose2 from "./home/DailyDose";
 
@@ -29,10 +30,11 @@ export default function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/daily" element={<DailyDose />} />
                 <Route path="/daily/news" element={<News />} />
-                {/* <Route path="/daily/weather" element={<Weather />} />
-                <Route path="/daily/currency" element={<Currency />} />
-                <Route path="/daily/stocks" element={<Stocks />} />
-                <Route path="/daily/mood" element={<MoodOfTheDay />} /> */}
+                <Route path="/daily/weather" element={<UserWeather />} />
+                <Route path="/daily/exchange" element={<Exchange />} />
+                {/* <Route path="/daily/stocks" element={<Stocks />} />
+                <Route path="/daily/mood" element={<MoodOfTheDay />} />
+                <Route path="/daily/crypto" element={<Crypto />} /> */}
                 <Route path="/map" element={<MapPage />} />
               </Routes>
             </main>
