@@ -12,7 +12,7 @@ export default function NewsItems({ articles, toggleFavourite, favourites }) {
           >
             <img
               src={
-                item.urltoimage ||
+                item.urlToImage ||
                 "https://via.placeholder.com/300x180?text=No+Image"
               }
               alt="News Image"
