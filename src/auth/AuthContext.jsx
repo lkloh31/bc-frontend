@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
     if (!response.ok) throw result;
     setToken(result.token);
 
-    localStorage.setItem("authToken", result);
+    localStorage.setItem("authToken", result.token);
   };
 
   const logout = () => {

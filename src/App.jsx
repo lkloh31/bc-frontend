@@ -12,6 +12,7 @@ import News from "./components/News";
 // import Currency from "./components/Currency";
 // import Stocks from "./components/Stocks";
 // import MoodOfTheDay from "./components/MoodOfTheDay";
+import MapPage from "./map/MapPage";
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
                 <Route path="/daily/currency" element={<Currency />} />
                 <Route path="/daily/stocks" element={<Stocks />} />
                 <Route path="/daily/mood" element={<MoodOfTheDay />} /> */}
+                <Route path="/map" element={<MapPage />} />
               </Routes>
             </main>
           </div>
