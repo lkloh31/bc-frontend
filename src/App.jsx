@@ -13,7 +13,7 @@ import News from "./components/News";
 // import Stocks from "./components/Stocks";
 // import MoodOfTheDay from "./components/MoodOfTheDay";
 import MapPage from "./map/MapPage";
-import DailyDose from "./home/DailyDose";
+// import DailyDose2 from "./home/DailyDose";
 
 export default function App() {
   return (
@@ -25,7 +25,6 @@ export default function App() {
             <main className="main-content">
               <Routes>
                 <Route path="/" element={<Homepage />} />
-                <Route path="/daily" element={<DailyDose />} /> 
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/daily" element={<DailyDose />} />
