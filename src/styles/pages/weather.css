@@ -1,99 +1,4 @@
-/* ===== Weather page: fixed header under navbar ===== */
-:root { --nav-h: 0px; }
-
-.wx {
-  --wx-header-h: 64px;   /* header height (make it 56–72px if you want) */
-  --wx-z: 1100;          /* stack under navbar */
-}
-
-/* ensure navbar is above the weather header */
-.navbar { z-index: 1200; background: #fff; }
-
-/* fixed, full-width header positioned by the measured navbar height */
-.wx__header {
-  position: fixed;
-  top: var(--nav-h);
-  left: 0;
-  right: 0;
-  height: var(--wx-header-h);
-  z-index: var(--wx-z);
-  overflow: visible;
-
-  background: #000;
-  color: #e6ecf1;
-  border-bottom: 1px solid #222;
-
-  display: grid;
-  grid-template-columns: 1fr minmax(260px, 520px);
-  align-items: center;
-  gap: 24px;
-  padding: 0 clamp(16px, 4vw, 48px);
-}
-
-/* reserve space so content starts below the fixed header */
-.wx__spacer { height: var(--wx-header-h); }
-
-/* only the widget/content scrolls */
-.wx__content { padding: 24px clamp(16px, 4vw, 48px) 80px; }
-
-/* search tweaks (keep as you like) */
-.wx__search { 
-  position: relative; 
-  display: flex;
-  width: 100%;
-  max-width: 520px;
- }
-
- .wx__search-list {
-  position: absolute;
-  top: calc(100% + 8px);             /* sit just below the input */
-  left: 0;
-  right: 0;                          /* same width as the input */
-  margin: 0;
-  padding: 6px 0;
-  list-style: none;
-
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  max-height: 320px;
-  overflow: auto;
-  box-shadow: 0 10px 30px rgba(0,0,0,.1);
-
-  z-index: 1300;                     /* above fixed header & widget */
-}
-.wx__search-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.wx__search-item:hover { background: #f6f7f9; }
-.wx__search-name { font-weight: 600; color: #111; overflow: hidden; text-overflow: ellipsis; }
-.wx__search-meta { color: #666; flex: 0 0 auto; }
-
-.wx__search-input {
-  height: 40px;
-  flex: 1;
-  padding: 0 40px 0 14px;
-  font-size: 18px;
-  border-radius: 8px;
-  border: 2px solid #000;
-  background: #fff;
-  color: #111;
-  font-family: "Courier New", Courier, monospace;
-}
-.wx__search-btn {
-  position: absolute; right: 8px; top: 50%;
-  transform: translateY(-50%); border: 0; background: transparent; cursor: pointer;
-}
-/* weather widget */
-
+/* Weather widget card */
 .ww-wrap{width:100%;max-width:720px;margin:0 auto;padding:24px;}
 .ww-card{
   position:relative;border-radius:24px;padding:20px;
@@ -102,12 +7,16 @@
   color:#fff;backdrop-filter:blur(8px);
   font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji;
 }
+
+/* Top row */
 .ww-top{display:flex;justify-content:space-between;align-items:center;color:rgba(255,255,255,.9)}
 .ww-title{font-weight:600}
 .ww-dot{margin:0 8px}
 .ww-sub{opacity:.8;font-size:14px}
 .ww-refresh{background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer;transition:background .2s}
 .ww-refresh:hover{background:rgba(255,255,255,.2)}
+
+/* Current */
 .ww-current{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;margin-top:18px}
 .ww-temp{font-size:64px;line-height:1;font-weight:600;text-shadow:0 2px 10px rgba(0,0,0,.25)}
 .ww-unit{font-size:20px;vertical-align:super;margin-left:6px}
@@ -116,12 +25,18 @@
 .ww-today{justify-self:end;background:rgba(255,255,255,.12);border-radius:18px;padding:12px 14px;min-width:120px}
 .ww-today-title{font-size:11px;text-transform:uppercase;letter-spacing:.06em;opacity:.8;margin-bottom:4px}
 .ww-today-range{font-size:14px}
+
+/* Sections */
 .ww-section{margin-top:18px}
 .ww-section-title{color:rgba(255,255,255,.85);font-size:14px;margin-bottom:8px}
+
+/* Hourly chips */
 .ww-hourly{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
 .ww-chip{flex:0 0 auto;min-width:68px;border-radius:14px;background:rgba(255,255,255,.12);padding:8px 10px;text-align:center}
 .ww-chip-time{font-size:11px;opacity:.8;margin-bottom:6px}
 .ww-chip-temp{font-size:13px;font-weight:600}
+
+/* 7-day */
 .ww-days{border-radius:14px;background:rgba(255,255,255,.07);overflow:hidden}
 .ww-day{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.08)}
 .ww-day:first-child{border-top:none}
@@ -132,14 +47,24 @@
 .ww-day-min{opacity:.85}
 .ww-bar{height:4px;width:96px;background:rgba(255,255,255,.15);border-radius:999px;overflow:hidden}
 .ww-bar-fill{height:100%;background:rgba(255,255,255,.7)}
+
+/* Footer & error */
 .ww-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:rgba(255,255,255,.75);font-size:12px}
 .ww-footer a{color:inherit;text-decoration:underline}
 .ww-error{margin-top:12px;background:rgba(244,63,94,.18);border:1px solid rgba(244,63,94,.35);color:#fecdd3;border-radius:12px;padding:10px}
+
+/* Icons */
 .ww-icon{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.5}
+
+/* Skeletons */
 .ww-skel{opacity:.8;animation:ww-pulse 1.2s ease-in-out infinite}
 .ww-skel-line{height:18px;background:rgba(255,255,255,.12);border-radius:8px}
 .ww-skel-line.small{width:40px;margin:0 auto 8px}
 .ww-skel-line.tiny{width:28px;margin:6px auto 0}
 .ww-skel-circle{width:24px;height:24px;border-radius:999px;background:rgba(255,255,255,.12);margin:6px auto}
 @keyframes ww-pulse{0%,100%{opacity:.5}50%{opacity:1}}
-@media (max-width:480px){ .ww-temp{font-size:52px} .ww-today{min-width:100px} }
+
+@media (max-width:480px){
+  .ww-temp{font-size:52px}
+  .ww-today{min-width:100px}
+}

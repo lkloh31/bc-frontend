@@ -2,7 +2,7 @@
 
 .map-page {
   display: grid;
-  grid-template-columns: 6fr 1fr;
+  grid-template-columns: 5fr 1fr;
   gap: 2rem;
   padding: 1rem;
   height: 60vh;
@@ -10,9 +10,9 @@
 }
 
 .map-box {
-  /* border: 1px solid black; */
+  /* border: 1px solid rgb(14, 14, 14); */
   border-radius: 16px;
-  /* padding: 1rem; */
+  padding: 0;
   position: relative;
   overflow: hidden;
 }
@@ -20,7 +20,6 @@
 .map-container {
   height: 100%;
   width: 100%;
-  border-radius: 12px;
 }
 
 .map-message {
@@ -32,10 +31,6 @@
   color: #666;
 }
 
-.map-message.error {
-  color: #d32f2f;
-}
-
 .map-info {
   position: absolute;
   bottom: 10px;
@@ -45,269 +40,4 @@
   border-radius: 5px;
   font-size: 12px;
   font-family: monospace;
-}
-
-.map-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.map-section {
-  border: 1px solid rgb(158, 157, 157);
-  border-radius: 16px;
-  padding: 1rem;
-  background-color: #f8f9fa;
-}
-
-.section-title {
-  font-weight: bold;
-  margin-bottom: 1rem;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 0.5rem;
-}
-
-.location-list {
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.location-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background-color 0.2s;
-  margin-bottom: 0.25rem;
-}
-
-.location-item:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.location-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.been-there-dot {
-  background-color: #4a90e2;
-}
-
-.want-to-go-dot {
-  background-color: #28a745;
-}
-
-.location-info {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.location-name {
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
-.location-rating {
-  font-size: 0.8rem;
-  color: #ff9800;
-}
-
-.map-instructions {
-  padding: 1rem;
-  background-color: #e5e6e6;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 0.9rem;
-  color: #484848;
-}
-
-/* Custom Mapbox markers */
-.custom-marker {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.been-there-marker {
-  background-color: #4a90e2;
-}
-
-.want-to-go-marker {
-  background-color: #28a745;
-}
-
-/* Mapbox popup styling */
-.mapboxgl-popup-content {
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.marker-popup h3 {
-  margin: 0 0 0.5rem 0;
-  color: #333;
-}
-
-.marker-popup p {
-  margin: 0.25rem 0;
-  font-size: 0.9rem;
-}
-
-.delete-pin-btn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  margin-top: 0.5rem;
-}
-
-.delete-pin-btn:hover {
-  background-color: #c82333;
-}
-
-/* Modal styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  max-width: 500px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  position: relative;
-}
-
-.modal-close-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #666;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-
-.modal-close-btn:hover {
-  background-color: #f0f0f0;
-}
-
-.add-pin-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.add-pin-form .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.add-pin-form label {
-  font-weight: 500;
-  color: #333;
-}
-
-.add-pin-form input,
-.add-pin-form select,
-.add-pin-form textarea {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-.add-pin-form input:focus,
-.add-pin-form select:focus,
-.add-pin-form textarea:focus {
-  outline: none;
-  border-color: #4a90e2;
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1rem;
-}
-
-.form-actions button {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.form-actions button[type="submit"] {
-  background-color: #4a90e2;
-  color: white;
-  border-color: #4a90e2;
-}
-
-.form-actions button[type="submit"]:hover {
-  background-color: #357abd;
-}
-
-.form-actions button[type="submit"]:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.form-actions button[type="button"] {
-  background-color: white;
-  color: #666;
-}
-
-.form-actions button[type="button"]:hover {
-  background-color: #f8f9fa;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .map-page {
-    grid-template-columns: 1fr;
-    height: auto;
-    width: 95vw;
-  }
-
-  .map-box {
-    height: 50vh;
-  }
-
-  .map-sidebar {
-    grid-row: 2;
-  }
 }
