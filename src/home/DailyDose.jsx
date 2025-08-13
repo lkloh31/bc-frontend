@@ -2,7 +2,7 @@ import { useAuth } from "../auth/AuthContext";
 import UserWeather from "../components/UserWeather";
 import "../styles/pages/daily.css";
 
-export default function DailyDose() {
+export default function DailyDose2() {
   const { token } = useAuth();
 
   return (
