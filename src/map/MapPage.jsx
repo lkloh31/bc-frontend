@@ -21,12 +21,12 @@ export default function MapPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
 
-  // Get pins data
+  // Get pins data - only if user is logged in
   const {
     data: pins = [],
     loading: pinsLoading,
     error: pinsError,
-  } = useQuery("/map/pins", "mapPins");
+  } = useQuery(token ? "/map/pins" : null, "mapPins");
 
   // Add pin mutation
   const { mutate: addPin, loading: addingPin } = useMutation(
@@ -61,50 +61,60 @@ export default function MapPage() {
     };
 
     getMapboxToken();
-  }, [token, request]);
+  }, [token, request, mapboxToken]);
 
   // Initialize map
   useEffect(() => {
-    if (map.current || !mapboxToken) return;
+    if (map.current || !mapboxToken || !mapContainer.current) return;
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v12",
-      center: [lng, lat],
-      zoom: zoom,
-    });
+    try {
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current, // Make sure this is the DOM element
+        style: "mapbox://styles/mapbox/streets-v12",
+        center: [lng, lat],
+        zoom: zoom,
+      });
 
-    // Add navigation controls
-    map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
+      // Add navigation controls
+      map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
 
-    // Update coordinates when map moves
-    map.current.on("move", () => {
-      setLng(map.current.getCenter().lng.toFixed(4));
-      setLat(map.current.getCenter().lat.toFixed(4));
-      setZoom(map.current.getZoom().toFixed(2));
-    });
+      // Update coordinates when map moves
+      map.current.on("move", () => {
+        setLng(map.current.getCenter().lng.toFixed(4));
+        setLat(map.current.getCenter().lat.toFixed(4));
+        setZoom(map.current.getZoom().toFixed(2));
+      });
 
-    // Handle map clicks for adding pins
-    map.current.on("click", (e) => {
-      const { lng, lat } = e.lngLat;
-      setSelectedLocation({ lng, lat });
-      setShowAddForm(true);
-    });
+      // Handle map clicks for adding pins
+      map.current.on("click", (e) => {
+        const { lng, lat } = e.lngLat;
+        setSelectedLocation({ lng, lat });
+        setShowAddForm(true);
+      });
 
-    map.current.on("load", () => {
-      setMapLoaded(true);
-    });
+      map.current.on("load", () => {
+        setMapLoaded(true);
+      });
+
+      // Error handling
+      map.current.on("error", (e) => {
+        console.error("Mapbox error:", e);
+      });
+    } catch (error) {
+      console.error("Error initializing map:", error);
+    }
 
     return () => {
       if (map.current) {
         map.current.remove();
+        map.current = null;
       }
     };
   }, [mapboxToken]);
 
   // Add markers when pins data changes
   useEffect(() => {
-    if (!map.current || !mapLoaded || !pins.length) return;
+    if (!map.current || !mapLoaded || !pins || pins.length === 0) return;
 
     // Clear existing markers
     const existingMarkers = document.querySelectorAll(".custom-marker");
@@ -142,7 +152,7 @@ export default function MapPage() {
                     ? "Been There"
                     : "Want to Go"
                 }</p>
-                <button onclick="deletePin(${
+                <button onclick="window.deletePin(${
                   pin.id
                 })" class="delete-pin-btn">Delete</button>
               </div>
@@ -193,10 +203,13 @@ export default function MapPage() {
   const handleDeletePin = async (pinId) => {
     if (window.confirm("Are you sure you want to delete this pin?")) {
       try {
-        await deletePin(null, {
+        // Create a new mutation for this specific pin deletion
+        const response = await request(`/map/pins/${pinId}`, {
           method: "DELETE",
-          resource: `/api/map/pins/${pinId}`,
         });
+
+        // Manually trigger pins refetch by invalidating the cache
+        window.location.reload(); // Simple solution, or use proper cache invalidation
       } catch (err) {
         console.error("Failed to delete pin:", err);
       }
@@ -211,9 +224,7 @@ export default function MapPage() {
     };
   }, []);
 
-  const beenTherePins = pins.filter((pin) => pin.locationType === "been_there");
-  const wantToGoPins = pins.filter((pin) => pin.locationType === "want_to_go");
-
+  // Show loading or login required states
   if (!token) {
     return (
       <div className="map-page">
@@ -225,6 +236,7 @@ export default function MapPage() {
   }
 
   if (pinsError) {
+    console.error("Pins error:", pinsError);
     return (
       <div className="map-page">
         <div className="map-box">
@@ -235,6 +247,9 @@ export default function MapPage() {
       </div>
     );
   }
+
+  const beenTherePins = pins.filter((pin) => pin.locationType === "been_there");
+  const wantToGoPins = pins.filter((pin) => pin.locationType === "want_to_go");
 
   return (
     <div className="map-page">

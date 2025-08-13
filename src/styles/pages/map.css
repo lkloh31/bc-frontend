@@ -54,7 +54,7 @@
 }
 
 .map-section {
-  border: 1px solid black;
+  border: 1px solid rgb(158, 157, 157);
   border-radius: 16px;
   padding: 1rem;
   background-color: #f8f9fa;
@@ -121,11 +121,11 @@
 
 .map-instructions {
   padding: 1rem;
-  background-color: #e3f2fd;
+  background-color: #e5e6e6;
   border-radius: 8px;
   text-align: center;
   font-size: 0.9rem;
-  color: #1976d2;
+  color: #484848;
 }
 
 /* Custom Mapbox markers */
