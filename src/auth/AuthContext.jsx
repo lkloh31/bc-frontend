@@ -57,7 +57,6 @@ export function AuthProvider({ children }) {
       const errorText = await response.text();
       throw new Error(errorText || "Login failed");
     }
-
   };
 
   const logout = () => {
