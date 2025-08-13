@@ -1,0 +1,22 @@
+.news-container {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.news-container nav {
+  position: sticky;
+  top: 100px; /* height of the main navbar */
+  z-index: 200;
+}
+
+.news-categories {
+  position: sticky;
+  top: 200px; /* main navbar height + news navbar height */
+  height: 60px;
+  z-index: 150;
+  padding: 10px 0; /* adds 10px space on top and bottom */
+}
+
+.articles-wrapper {
+  height: calc(100vh - 290px);
+  overflow-y: auto;
+}

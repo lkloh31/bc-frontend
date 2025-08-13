@@ -1,5 +1,9 @@
+@import "tailwindcss";
+
 .navbar {
-  background-color: transparent;
+  /* background-color: transparent; */
+  background: #fff;
+
   color: black;
   display: flex;
   justify-content: space-between;
@@ -11,6 +15,9 @@
   left: 0;
   right: 0;
   height: 60px;
+  
+  padding: 2.75rem 3.5rem;
+  z-index: 1200;
 }
 
 .logo {
@@ -71,7 +78,7 @@
   transition: 0.3s;
 }
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 800px) {
   .menubutton {
     display: flex;
   }

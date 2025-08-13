@@ -1,0 +1,50 @@
+.daily-dose {
+  max-width: 600px;
+  text-align: center;
+  padding: 2rem;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.daily-dose h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 0.5rem;
+}
+
+.daily-dose h2 {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 0.5rem;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.daily-dose h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.daily-dose-links {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 1rem;
+}
+
+.daily-dose-links a {
+  padding: 0.5rem 1rem;
+  background-color: #f0f0f0;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: bg 0.2s;
+}
+
+.daily-dose-links a:hover {
+  background-color: #ddd;
+}

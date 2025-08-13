@@ -15,32 +15,48 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = async (credentials) => {
-    const response = await fetch(API + "/admin/register", {
+    const response = await fetch(API + "/users/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(credentials),
     });
-    const result = await response.json();
-    if (!response.ok) throw result;
-    setToken(result.token);
-    localStorage.setItem("authToken", result.token);
+    // Check if response is JSON
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.message || "Registration failed");
+      setToken(result.token);
+      localStorage.setItem("authToken", result.token);
+    } else {
+      // Handle non-JSON responses (plain text errors)
+      const errorText = await response.text();
+      throw new Error(errorText || "Registration failed");
+    }
   };
 
   const login = async (credentials) => {
-    const response = await fetch(API + "/admin/login", {
+    const response = await fetch(API + "/users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(credentials),
     });
-    const result = await response.json();
-    if (!response.ok) throw result;
-    setToken(result.token);
-
-    localStorage.setItem("authToken", result);
+    // Check if response is JSON
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Login failed");
+      setToken(result.token);
+      localStorage.setItem("authToken", result.token);
+    } else {
+      // Handle non-JSON responses (plain text errors)
+      const errorText = await response.text();
+      throw new Error(errorText || "Login failed");
+    }
   };
 
   const logout = () => {
