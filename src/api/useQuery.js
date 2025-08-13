@@ -9,6 +9,12 @@ export default function useQuery(resource, tag) {
   const [error, setError] = useState(null);
 
   const query = async () => {
+    // Don't make request if resource is null/undefined
+    if (!resource) {
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
