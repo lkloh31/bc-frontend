@@ -25,7 +25,7 @@ export default function App() {
             <main className="main-content">
               <Routes>
                 <Route path="/" element={<Homepage />} />
-                <Route path="/daily" element={<DailyDose />} /> 
+                <Route path="/daily" element={<DailyDose />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/daily" element={<DailyDose />} />
