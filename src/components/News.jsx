@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import NewsItems from "./NewsItems";
 import InfiniteScroll from "react-infinite-scroll-component";
+import NewsItems from "./NewsItems";
 import { FaSearch } from "react-icons/fa";
 import "../styles/pages/news.css";
 
 export default function News() {
-  const options = [
+  const categories = [
     "Favourites",
     "Business",
     "Technology",
@@ -23,80 +23,86 @@ export default function News() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [favourites, setFavourites] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
 
-  // Load favourites from localStorage
+  // Load favourites from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem("favourites");
-    if (saved) {
-      setFavourites(JSON.parse(saved));
-    }
+    if (saved) setFavourites(JSON.parse(saved));
   }, []);
 
-  // Save favourites to localStorage whenever they change
+  // Save favourites whenever changed
   useEffect(() => {
     localStorage.setItem("favourites", JSON.stringify(favourites));
   }, [favourites]);
 
-  const fetchData = async (searchTerm, pageNum) => {
+  // Fetch articles from backend
+  const fetchArticles = async (searchTerm, pageNum) => {
     setLoading(true);
     try {
       const res = await axios.get("http://localhost:3000/daily/news", {
-        params: { q: searchTerm || "latest", page: pageNum },
+        params: { q: searchTerm, page: pageNum },
       });
-      if (pageNum === 1) {
-        setArticles(res.data);
-      } else {
-        setArticles((prev) => [...prev, ...res.data]);
-      }
-    } catch (err) {
-      console.error(err);
+
+      const { articles: newArticles, totalResults } = res.data;
+
+      setArticles((prev) => {
+        const updated = pageNum === 1 ? newArticles : [...prev, ...newArticles];
+        setHasMore(updated.length < totalResults);
+        return updated;
+      });
+    } catch (error) {
+      console.error("Fetch error:", error);
+      setHasMore(false);
     }
     setLoading(false);
   };
 
+  // Effect: fetch on search or page changes
   useEffect(() => {
-    if (!search) return;
-
     if (search.toLowerCase() === "favourites") {
-      // Show saved favourites
       setArticles(favourites);
-      return;
+      setHasMore(false);
+    } else {
+      fetchArticles(search, page);
     }
-
-    fetchData(search, page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, page, favourites]);
 
+  // Handle new search or category click
   const searchNews = (term) => {
-    const trimmedTerm = term.trim();
+    const trimmed = term.trim();
 
-    setArticles([]);
     setPage(1);
+    setHasMore(true);
 
-    if (trimmedTerm.toLowerCase() === "favourites") {
+    if (trimmed.toLowerCase() === "favourites") {
       setSearch("Favourites");
       setArticles(favourites);
-      setInputValue(""); // Clear input when viewing favourites
+      setHasMore(false);
+      setInputValue("");
     } else {
-      setSearch(trimmedTerm === "" ? "latest" : trimmedTerm);
-      setInputValue(trimmedTerm === "" ? "" : trimmedTerm);
+      setSearch(trimmed === "" ? "latest" : trimmed);
+      setInputValue(trimmed === "" ? "" : trimmed);
     }
   };
 
-  const fetchNews = () => {
-    setPage((prev) => prev + 1);
+  // Load next page
+  const fetchMoreData = () => {
+    if (hasMore && !loading) {
+      setPage((prev) => prev + 1);
+    }
   };
 
+  // Toggle favourite status
   const toggleFavourite = (article) => {
     const exists = favourites.some((fav) => fav.url === article.url);
-    let updated;
-    if (exists) {
-      updated = favourites.filter((fav) => fav.url !== article.url);
-    } else {
-      updated = [...favourites, article];
-    }
+    const updated = exists
+      ? favourites.filter((fav) => fav.url !== article.url)
+      : [...favourites, article];
+
     setFavourites(updated);
 
-    // If viewing favourites, update the list shown
     if (search === "Favourites") {
       setArticles(updated);
     }
@@ -113,9 +119,7 @@ export default function News() {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                searchNews(inputValue);
-              }
+              if (e.key === "Enter") searchNews(inputValue);
             }}
             placeholder="Search news..."
             className="w-[300px] h-[30px] bg-white p-2 outline-none"
@@ -127,31 +131,31 @@ export default function News() {
         </div>
       </nav>
 
-      {/* Categories (sticky right below navbar) */}
+      {/* Categories */}
       <div className="news-categories w-full">
         <div className="flex justify-center items-center border-b-1 pb-[10px]">
-          {options.map((item) => (
+          {categories.map((cat) => (
             <div
-              key={item}
+              key={cat}
               className={`mx-[20px] p-2 cursor-pointer rounded-md ${
-                search.toLowerCase() === item.toLowerCase()
+                search.toLowerCase() === cat.toLowerCase()
                   ? "bg-gray-700 text-white"
                   : "bg-black text-gray-300"
               }`}
-              onClick={() => searchNews(item)}
+              onClick={() => searchNews(cat)}
             >
-              {item}
+              {cat}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Articles scroll area */}
+      {/* Articles with infinite scroll */}
       <div className="articles-wrapper w-[1200px] mx-auto">
         <InfiniteScroll
           dataLength={articles.length}
-          next={fetchNews}
-          hasMore={search.toLowerCase() !== "favourites"}
+          next={fetchMoreData}
+          hasMore={search.toLowerCase() !== "favourites" && hasMore}
           loader={<h4>Loading...</h4>}
           scrollThreshold={0.9}
         >

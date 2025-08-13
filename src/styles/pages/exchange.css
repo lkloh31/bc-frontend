@@ -1,0 +1,48 @@
+.exchange-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.exchange-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.exchange-loading,
+.exchange-error {
+  text-align: center;
+  font-size: 1.1em;
+  color: #666;
+}
+
+.exchange-error {
+  color: red;
+}
+
+.exchange-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.exchange-table th,
+.exchange-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.exchange-table th {
+  background-color: #007bff;
+  color: white;
+}
+
+.exchange-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.exchange-table tr:hover {
+  background-color: #e6f7ff;
+}
