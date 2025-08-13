@@ -284,6 +284,7 @@ export default function MapPage() {
           </>
         )}
       </div>
+
       <div className="map-sidebar">
         <div className="map-section been-there-section">
           <div className="section-title">
@@ -349,7 +350,9 @@ export default function MapPage() {
             <h3>Add New Location</h3>
             <form onSubmit={handleSubmit} className="add-pin-form">
               <div className="form-group">
+
                 <label>Name</label>
+
                 <input
                   type="text"
                   value={formData.name}

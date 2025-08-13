@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useState } from "react";
 // you said weather.css lives here:
 import "../styles/pages/weather.css";
@@ -19,6 +20,7 @@ const WMO = {
 };
 const codeToIcon = (c)=>WMO[c]?.icon||"cloud";
 const codeToLabel = (c)=>WMO[c]?.label||"—";
+
 const round = (n)=>Math.round(n);
 const toHourLabel=(iso,now=new Date())=>{
   const d=new Date(iso);
@@ -131,6 +133,7 @@ export default function WeatherWidget({ units = "metric", serverData }) {
       <div className="ww-card">
         <div className="ww-top">
           <div>
+
             <span className="ww-title">Weather</span>
             <span className="ww-dot">•</span>
             <span className="ww-sub">
