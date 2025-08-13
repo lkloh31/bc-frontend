@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
 import "../styles/components/navbar.css";
@@ -47,9 +47,9 @@ export default function Navbar() {
             <Link to="/map" onClick={closeMenu}>
               Map
             </Link>
-            <a href="#" onClick={closeMenu}>
+            <Link to="/journal" onClick={closeMenu}>
               Journal
-            </a>
+            </Link>
             <a href="#" onClick={closeMenu}>
               +
             </a>

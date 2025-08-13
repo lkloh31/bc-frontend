@@ -61,6 +61,83 @@ export default function MapPage() {
           </>
         )}
       </div>
+
+      {/* Add Pin Form Modal */}
+      {showAddForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <button
+              className="modal-close-btn"
+              onClick={() => setShowAddForm(false)}
+            >
+              ×
+            </button>
+            <h3>Add New Location</h3>
+            <form onSubmit={handleSubmit} className="add-pin-form">
+              <div className="form-group">
+                <label>Name *</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  required
+                  placeholder="Location name"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Type</label>
+                <select
+                  value={formData.locationType}
+                  onChange={(e) =>
+                    setFormData({ ...formData, locationType: e.target.value })
+                  }
+                >
+                  <option value="been_there">Been There</option>
+                  <option value="want_to_go">Want to Go</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Rating (1-5)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="5"
+                  value={formData.rating}
+                  onChange={(e) =>
+                    setFormData({ ...formData, rating: e.target.value })
+                  }
+                  placeholder="Optional rating"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Notes</label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                  placeholder="Optional notes"
+                  rows="3"
+                />
+              </div>
+
+              <div className="form-actions">
+                <button type="button" onClick={() => setShowAddForm(false)}>
+                  Cancel
+                </button>
+                <button type="submit" disabled={addingPin}>
+                  {addingPin ? "Adding..." : "Add Location"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
