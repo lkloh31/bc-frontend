@@ -44,7 +44,7 @@ export default function JournalPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
+
   const handleSelectEntry = (entry) => {
     setSelectedEntry(entry);
   };
@@ -60,14 +60,16 @@ export default function JournalPage() {
         // Update existing entry
         const updatedEntry = await request(`/journal/${selectedEntry.id}`, {
           method: "PUT",
-          body: formData,
+          body: JSON.stringify(formData), // Stringify the formData
         });
-        setEntries(entries.map(e => e.id === selectedEntry.id ? updatedEntry : e));
+        setEntries(
+          entries.map((e) => (e.id === selectedEntry.id ? updatedEntry : e))
+        );
       } else {
         // Create new entry
         const newEntry = await request("/journal", {
           method: "POST",
-          body: formData,
+          body: JSON.stringify(formData), // Stringify the formData
         });
         setEntries([newEntry, ...entries]);
         setSelectedEntry(newEntry);
@@ -80,26 +82,35 @@ export default function JournalPage() {
   const handleDelete = async () => {
     if (!selectedEntry) return;
     if (window.confirm("Are you sure you want to delete this entry?")) {
-        try {
-            await request(`/journal/${selectedEntry.id}`, { method: 'DELETE' });
-            setEntries(entries.filter(e => e.id !== selectedEntry.id));
-            setSelectedEntry(null);
-        } catch (err) {
-            console.error("Failed to delete entry:", err);
-        }
+      try {
+        await request(`/journal/${selectedEntry.id}`, { method: "DELETE" });
+        setEntries(entries.filter((e) => e.id !== selectedEntry.id));
+        setSelectedEntry(null);
+      } catch (err) {
+        console.error("Failed to delete entry:", err);
+      }
     }
   };
-
 
   return (
     <div className="journal-page">
       <aside className="journal-sidebar">
         <div className="journal-list">
           <h3>Entries</h3>
-          <button onClick={handleNewEntry} className="button-primary" style={{marginBottom: "1rem"}}>+ New Entry</button>
+          <button
+            onClick={handleNewEntry}
+            className="button-primary"
+            style={{ marginBottom: "1rem" }}
+          >
+            + New Entry
+          </button>
           <ul>
             {entries.map((entry) => (
-              <li key={entry.id} onClick={() => handleSelectEntry(entry)} className={selectedEntry?.id === entry.id ? 'active-entry' : ''}>
+              <li
+                key={entry.id}
+                onClick={() => handleSelectEntry(entry)}
+                className={selectedEntry?.id === entry.id ? "active-entry" : ""}
+              >
                 {entry.title}
               </li>
             ))}
@@ -135,9 +146,13 @@ export default function JournalPage() {
               {selectedEntry ? "Save Changes" : "Create Entry"}
             </button>
             {selectedEntry && (
-                <button type="button" className="button-danger" onClick={handleDelete}>
-                    Delete
-                </button>
+              <button
+                type="button"
+                className="button-danger"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
             )}
           </div>
         </form>
