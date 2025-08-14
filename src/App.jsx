@@ -40,7 +40,6 @@ export default function App() {
                 <Route path="/map" element={<MapPage />} />
                 <Route path="/brain/*" element={<BrainGames />} />
                 <Route path="/journal" element={<JournalPage />} />
-               </Route>
               </Routes>
             </main>
           </div>
