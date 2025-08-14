@@ -15,7 +15,6 @@ import JournalPage from "./journal/JournalPage";
 // import MoodOfTheDay from "./components/MoodOfTheDay";
 // import Crypto from "./components/Crypto";
 import MapPage from "./map/MapPage";
-// import DailyDose2 from "./home/DailyDose";
 import BrainGames from "./pages/BrainGames.jsx";
 
 export default function App() {
