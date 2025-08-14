@@ -1,7 +1,45 @@
 .exchange-container {
+  font-family: "Courier New", Courier, monospace;
   padding: 20px;
   background-color: #f8f9fa;
   border-radius: 8px;
+}
+
+.converter {
+  font-family: "Courier New", Courier, monospace;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 30vh;
+}
+
+.converter h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 15px; /* space below */
+}
+
+.converter > div {
+  margin: 10px 0;
+}
+
+.input {
+  border: 1px solid #333;
+  border-radius: 0.3em;
+  padding: 0.25rem;
+  width: 10em;
+}
+
+select {
+  margin-left: 0.5rem;
+}
+
+.equals {
+  font-weight: bold;
+  font-size: 2rem;
 }
 
 .exchange-title {
@@ -35,7 +73,7 @@
 }
 
 .exchange-table th {
-  background-color: #007bff;
+  background-color: #3f4041;
   color: white;
 }
 
