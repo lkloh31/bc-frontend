@@ -8,22 +8,50 @@ const ApiContext = createContext();
 
 export function ApiProvider({ children }) {
   const { token } = useAuth();
-  const headers = { "Content-Type": "application/json" };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
 
   /**
    * Makes an API call and parses the response as JSON if possible.
    * Throws an error if anything goes wrong.
    */
-  const request = async (resource, options) => {
-    const response = await fetch(API + resource, {
-      ...options,
-      headers,
-    });
-    const isJson = /json/.test(response.headers.get("Content-Type"));
-    const result = isJson ? await response.json() : undefined;
-    if (!response.ok) throw Error(result?.message ?? "Something went wrong :(");
-    return result;
+  const request = async (resource, options = {}) => {
+    // Create headers object
+    const headers = {
+      "Content-Type": "application/json",
+      ...options.headers, // Allow overriding headers
+    };
+
+    // Only add Authorization header if token exists
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    console.log("Making request to:", API + resource);
+    console.log("With headers:", headers);
+    console.log("With options:", options);
+
+    try {
+      const response = await fetch(API + resource, {
+        ...options,
+        headers,
+      });
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+
+      const isJson = /json/.test(response.headers.get("Content-Type"));
+      const result = isJson ? await response.json() : await response.text();
+
+      console.log("Response result:", result);
+
+      if (!response.ok) {
+        throw new Error(result?.message || result || "Something went wrong :(");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Request failed:", error);
+      throw error;
+    }
   };
 
   const [tags, setTags] = useState({});
