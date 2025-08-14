@@ -49,7 +49,7 @@ export default function MapPage() {
   // Get Mapbox token on component mount
   useEffect(() => {
     const getMapboxToken = async () => {
-      if (!token || mapboxToken) return;
+      if (!token) return;
 
       try {
         const response = await request("/map/mapbox-token");
@@ -61,7 +61,7 @@ export default function MapPage() {
     };
 
     getMapboxToken();
-  }, [token, request, mapboxToken]);
+  }, [token, request]);
 
   // Initialize map
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function MapPage() {
 
     try {
       map.current = new mapboxgl.Map({
-        container: mapContainer.current, // Make sure this is the DOM element
+        container: mapContainer.current,
         style: "mapbox://styles/mapbox/streets-v12",
         center: [lng, lat],
         zoom: zoom,
@@ -116,17 +116,32 @@ export default function MapPage() {
   useEffect(() => {
     if (!map.current || !mapLoaded || !pins || pins.length === 0) return;
 
+    console.log("Adding markers for pins:", pins); // Debug log
+
     // Clear existing markers
     const existingMarkers = document.querySelectorAll(".custom-marker");
     existingMarkers.forEach((marker) => marker.remove());
 
     pins.forEach((pin) => {
+      console.log("Processing pin:", pin); // Debug each pin
+
+      // Ensure coordinates are valid numbers
+      const lng = parseFloat(pin.longitude);
+      const lat = parseFloat(pin.latitude);
+
+      if (isNaN(lng) || isNaN(lat)) {
+        console.error("Invalid coordinates for pin:", pin);
+        return;
+      }
+
       const el = document.createElement("div");
       el.className = `custom-marker ${
         pin.locationType === "been_there"
           ? "been-there-marker"
           : "want-to-go-marker"
       }`;
+
+      console.log("Creating marker at:", [lng, lat]); // Debug coordinates
 
       const marker = new mapboxgl.Marker(el)
         .setLngLat([pin.longitude, pin.latitude])
@@ -159,6 +174,8 @@ export default function MapPage() {
             `)
         )
         .addTo(map.current);
+
+      console.log("Marker added successfully for:", pin.name);
     });
   }, [pins, mapLoaded]);
 
@@ -178,11 +195,13 @@ export default function MapPage() {
 
     const pinData = {
       name: formData.name,
-      latitude: selectedLocation.lat,
-      longitude: selectedLocation.lng,
+      address: "",
       notes: formData.notes,
       rating: formData.rating ? parseInt(formData.rating) : null,
       locationType: formData.locationType,
+      visitedDate: null,
+      latitude: selectedLocation.lat,
+      longitude: selectedLocation.lng,
     };
 
     try {
@@ -197,21 +216,21 @@ export default function MapPage() {
       });
     } catch (err) {
       console.error("Failed to add pin:", err);
+      alert("Failed to add location. Please try again.");
     }
   };
 
   const handleDeletePin = async (pinId) => {
     if (window.confirm("Are you sure you want to delete this pin?")) {
       try {
-        // Create a new mutation for this specific pin deletion
-        const response = await request(`/map/pins/${pinId}`, {
+        await request(`/map/pins/${pinId}`, {
           method: "DELETE",
         });
-
-        // Manually trigger pins refetch by invalidating the cache
-        window.location.reload(); // Simple solution, or use proper cache invalidation
+        // Force reload pins data
+        window.location.reload();
       } catch (err) {
         console.error("Failed to delete pin:", err);
+        alert("Failed to delete pin. Please try again.");
       }
     }
   };
@@ -265,6 +284,7 @@ export default function MapPage() {
           </>
         )}
       </div>
+
       <div className="map-sidebar">
         <div className="map-section been-there-section">
           <div className="section-title">
@@ -330,7 +350,9 @@ export default function MapPage() {
             <h3>Add New Location</h3>
             <form onSubmit={handleSubmit} className="add-pin-form">
               <div className="form-group">
-                <label>Name *</label>
+
+                <label>Name</label>
+
                 <input
                   type="text"
                   value={formData.name}

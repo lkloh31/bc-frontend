@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthContext";
 import { ApiProvider } from "./api/ApiContext";
 import Homepage from "./home/HomePage";
@@ -10,11 +10,12 @@ import DailyDose from "./components/DailyDose";
 import News from "./components/News";
 import UserWeather from "./components/UserWeather";
 import Exchange from "./components/Exchange";
+import JournalPage from "./journal/JournalPage";
 // import Stocks from "./components/Stocks";
 // import MoodOfTheDay from "./components/MoodOfTheDay";
 // import Crypto from "./components/Crypto";
 import MapPage from "./map/MapPage";
-// import DailyDose2 from "./home/DailyDose";
+import BrainGames from "./pages/BrainGames.jsx";
 
 export default function App() {
   return (
@@ -36,6 +37,8 @@ export default function App() {
                 <Route path="/daily/mood" element={<MoodOfTheDay />} />
                 <Route path="/daily/crypto" element={<Crypto />} /> */}
                 <Route path="/map" element={<MapPage />} />
+                <Route path="/brain/*" element={<BrainGames />} />
+                <Route path="/journal" element={<JournalPage />} />
               </Routes>
             </main>
           </div>
