@@ -7,10 +7,9 @@
 
 .converter {
   font-family: "Courier New", Courier, monospace;
-  margin: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
   min-height: 30vh;
@@ -19,15 +18,12 @@
 .converter h1 {
   font-size: 1.5rem;
   font-weight: 600;
-  margin-bottom: 15px; /* space below */
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
-.converter > div {
-  margin: 10px 0;
-}
-
-.input {
-  border: 1px solid #333;
+.converter-input {
+  border: 2px solid #333;
   border-radius: 0.3em;
   padding: 0.25rem;
   width: 10em;
@@ -35,6 +31,7 @@
 
 select {
   margin-left: 0.5rem;
+  font-size: 1.2rem;
 }
 
 .equals {
@@ -42,10 +39,18 @@ select {
   font-size: 2rem;
 }
 
+.converter-row {
+  display: flex;
+  align-items: center; /* vertically centers input and select */
+  gap: 0.5rem; /* space between input and select */
+}
+
 .exchange-title {
   text-align: center;
   margin-bottom: 20px;
   color: #333;
+  font-weight: 600;
+  font-size: 1.5rem;
 }
 
 .exchange-loading,
