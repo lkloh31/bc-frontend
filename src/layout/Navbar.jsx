@@ -50,6 +50,9 @@ export default function Navbar() {
             <Link to="/journal" onClick={closeMenu}>
               Journal
             </Link>
+            <Link to="/brain" onClick={closeMenu}>
+            Brain Games
+            </Link>
             <a href="#" onClick={closeMenu}>
               +
             </a>
