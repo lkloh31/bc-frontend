@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { API } from "../api/ApiContext";
+import MemoryLeaderboard from "../components/MemoryLeaderboard.jsx";
 
 function shuffledPairs() {
   const base = ["🍎","🍌","🍇","🍑","🍓","🍒","🥝","🍍"];
@@ -17,9 +18,9 @@ export default function MemoryMatch() {
   const [cards, setCards] = useState(shuffledPairs());
   const [sel, setSel] = useState([]);
   const [best, setBest] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0); // ⬅️ triggers leaderboard reload
   const startRef = useRef(null);
 
-  // load existing best on mount
   useEffect(() => {
     if (!token) return;
     (async () => {
@@ -31,7 +32,7 @@ export default function MemoryMatch() {
         if (data.memory?.best_time_ms) setBest(data.memory.best_time_ms);
       }
     })();
-  }, [token]);
+  }, [token, API]);
 
   async function saveBest(ms) {
     if (!token) return;
@@ -47,8 +48,11 @@ export default function MemoryMatch() {
       if (res.ok) {
         const row = await res.json();
         setBest(row.best_time_ms);
+        setRefreshKey(k => k + 1); // ⬅️ refresh leaderboard after saving
       }
-    } catch {}
+    } catch {
+      // ignore for now
+    }
   }
 
   // timer: start on first flip
@@ -95,24 +99,31 @@ export default function MemoryMatch() {
   }
 
   return (
-    <div>
-      <div style={{ marginBottom: 8, fontWeight: 600 }}>
-        {finished ? "You matched them all! 🎉" : "Find all pairs"}
-        {best != null && <span style={{ marginLeft: 10 }}>Best: {best} ms</span>}
+    <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
+      <div style={{ flex: 1, minWidth: 280 }}>
+        <div style={{ marginBottom: 8, fontWeight: 600 }}>
+          {finished ? "You matched them all! 🎉" : "Find all pairs"}
+          {best != null && <span style={{ marginLeft: 10 }}>Best: {best} ms</span>}
+        </div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,56px)", gap:8 }}>
+          {cards.map((c,i)=>(
+            <button key={c.id} onClick={()=>flip(i)}
+              style={{
+                width:56, height:56, fontSize:24,
+                background: c.open || c.done ? "#242424" : "#0f0f0f",
+                border: c.done ? "2px solid #2ecc71" : "1px solid #444", color:"#fff"
+              }}>
+              {(c.open || c.done) ? c.v : "?"}
+            </button>
+          ))}
+        </div>
+        <button onClick={reset} style={{ marginTop:10 }}>New game</button>
       </div>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,56px)", gap:8 }}>
-        {cards.map((c,i)=>(
-          <button key={c.id} onClick={()=>flip(i)}
-            style={{
-              width:56, height:56, fontSize:24,
-              background: c.open || c.done ? "#242424" : "#0f0f0f",
-              border: c.done ? "2px solid #2ecc71" : "1px solid #444", color:"#fff"
-            }}>
-            {(c.open || c.done) ? c.v : "?"}
-          </button>
-        ))}
+
+      {/* Leaderboard beside the game */}
+      <div style={{ width: 320 }}>
+        <MemoryLeaderboard refreshKey={refreshKey} apiBase={API} prefix="/games" />
       </div>
-      <button onClick={reset} style={{ marginTop:10 }}>New game</button>
     </div>
   );
 }
