@@ -8,7 +8,7 @@ import Login from "./auth/Login";
 import Navbar from "./layout/Navbar";
 import DailyDose from "./components/DailyDose";
 import News from "./components/News";
-import UserWeather from "./components/UserWeather";
+import UserWeather from "./components/weather/UserWeather";
 import Exchange from "./components/Exchange";
 // import Stocks from "./components/Stocks";
 import Crypto from "./components/Crypto.jsx";

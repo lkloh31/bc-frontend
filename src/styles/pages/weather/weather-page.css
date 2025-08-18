@@ -1,0 +1,181 @@
+/* ===== Animated Weather Page Background ===== */
+
+/* .wx { position: relative; min-height: 100dvh; }
+.wx-bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; } */
+
+.wx { position: relative; min-height: 100dvh; isolation: isolate; }
+.wx-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+
+/* .wx__header,
+.wx__content { position: relative; z-index: 1; } */
+
+.wx__content { position: relative; z-index: 1; }
+.wx__header { position: fixed; z-index: 800; }
+
+.wx__search-list { z-index: 1300; }
+
+
+/* ---- THE SKY (changes by condition) ---- */
+.wx-bg__gradient { position:absolute; inset:0; transition:background 600ms ease; }
+.wx--sun    .wx-bg__gradient { background: linear-gradient(180deg,#7ecbff 0%, #ffe79a 55%, #fff 100%); }
+.wx--cloud  .wx-bg__gradient { background: linear-gradient(180deg,#bcd0e0 0%, #9fb1c3 60%, #dcdfe6 100%); }
+.wx--cloudSun .wx-bg__gradient { background: linear-gradient(180deg,#a9d8ff 0%, #d5e0f5 55%, #fff 100%); }
+.wx--rain   .wx-bg__gradient,
+.wx--drizzle .wx-bg__gradient { background: linear-gradient(180deg,#8fc5ff 0%, #5aa9ff 55%, #25324a 100%); }
+.wx--snow   .wx-bg__gradient { background: linear-gradient(180deg,#eaf6ff 0%, #cfeaff 55%, #ffffff 100%); }
+.wx--storm  .wx-bg__gradient { background: linear-gradient(180deg,#374a74 0%, #232a4a 60%, #17182d 100%); }
+.wx--fog    .wx-bg__gradient { background: linear-gradient(180deg,#dfe6ee 0%, #c7cfd8 60%, #e8edf2 100%); }
+
+/* ---- CLOUDS ---- */
+.wx-bg__clouds { position:absolute; inset:-10% -30% 0 -30%; opacity:.8; }
+.wx-bg__clouds::before, .wx-bg__clouds::after{
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(180px 70px at 15% 20%, rgba(255,255,255,.9) 0 70%, transparent 71%),
+    radial-gradient(220px 80px at 40% 30%, rgba(255,255,255,.85) 0 70%, transparent 71%),
+    radial-gradient(200px 80px at 70% 28%, rgba(255,255,255,.9) 0 70%, transparent 71%),
+    radial-gradient(180px 70px at 90% 25%, rgba(255,255,255,.85) 0 70%, transparent 71%);
+  filter: blur(6px);
+  transform: translateX(-10%);
+  animation: cloudDrift 60s linear infinite;
+}
+.wx-bg__clouds::after{
+  opacity:.7;
+  transform: translateX(-40%) translateY(12%);
+  animation-duration: 85s;
+}
+@keyframes cloudDrift { 0%{ transform: translateX(-40%); } 100%{ transform: translateX(20%); } }
+.wx--sun .wx-bg__clouds{ opacity:.18; }
+.wx--storm .wx-bg__clouds{ opacity:.35; }
+
+/* ---- RAIN ---- */
+/* ---- RAIN (streaks, not wallpaper) ---- */
+.wx-bg__rain{
+  position:absolute; inset:-18% -10%;
+  opacity:0;                      /* default off */
+  pointer-events:none;
+  /* fade in/out toward top & bottom so it doesn't feel tiled */
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+}
+
+/* two independent layers for depth */
+.wx-bg__rain::before,
+.wx-bg__rain::after{
+  content:"";
+  position:absolute; inset:0;
+  background-repeat: repeat;
+  will-change: transform;
+}
+
+/* layer A: slightly thicker, slower */
+.wx-bg__rain::before{
+  /* thin diagonal streaks with gaps (no perfect stripes) */
+  background-image:
+    linear-gradient(120deg, rgba(255,255,255,.35) 1px, rgba(255,255,255,0) 3px);
+  background-size: 14px 24px;            /* spacing of streaks */
+  filter: blur(.2px);
+  animation: wxRainA 1.15s linear infinite;
+}
+
+/* layer B: thinner, faster, offset a bit */
+.wx-bg__rain::after{
+  background-image:
+    linear-gradient(120deg, rgba(255,255,255,.25) 1px, rgba(255,255,255,0) 2px);
+  background-size: 10px 18px;
+  opacity:.85;
+  transform: translate3d(0,0,0) translateX(2%); /* offset so layers don't align */
+  animation: wxRainB 0.95s linear infinite;
+}
+
+@keyframes wxRainA {
+  0%   { transform: translate3d(0,-12%,0); }
+  100% { transform: translate3d(-2%,12%,0); }  /* slight x drift */
+}
+@keyframes wxRainB {
+  0%   { transform: translate3d(0,-12%,0); }
+  100% { transform: translate3d(-1%,12%,0); }
+}
+
+/* show intensity by condition */
+.wx--drizzle .wx-bg__rain{ opacity:.35; }
+.wx--rain    .wx-bg__rain{ opacity:.55; }
+.wx--storm   .wx-bg__rain{ opacity:.65; }  /* storms look heavier */
+
+
+/* ---- SNOW ---- */
+.wx-bg__snow{ position:absolute; inset:0; opacity:0; }
+.wx-bg__snow::before, .wx-bg__snow::after{
+  content:""; position:absolute; inset:-10% 0 auto 0; height:120%;
+  background:
+    radial-gradient(2px 2px at 20% 10%, rgba(255,255,255,.9) 98%, transparent 100%),
+    radial-gradient(2px 2px at 60% 30%, rgba(255,255,255,.9) 98%, transparent 100%),
+    radial-gradient(2px 2px at 80% 15%, rgba(255,255,255,.9) 98%, transparent 100%),
+    radial-gradient(2px 2px at 35% 40%, rgba(255,255,255,.9) 98%, transparent 100%),
+    radial-gradient(2px 2px at 10% 60%, rgba(255,255,255,.9) 98%, transparent 100%),
+    radial-gradient(2px 2px at 75% 55%, rgba(255,255,255,.9) 98%, transparent 100%);
+  animation: snowFall 10s linear infinite;
+}
+.wx-bg__snow::after{ opacity:.7; animation-duration: 14s; }
+@keyframes snowFall { 0% { transform: translateY(-8%); } 100% { transform: translateY(8%); } }
+.wx--snow .wx-bg__snow{ opacity:.8; }
+
+/* ---- LIGHTNING (storm) ---- */
+.wx-bg__flash{
+  position:absolute; inset:0;
+  background: radial-gradient(60% 40% at 60% 10%, rgba(255,255,255,.9), transparent 60%);
+  mix-blend-mode: screen; opacity:0;
+  animation: flash 14s linear infinite;
+}
+@keyframes flash{ 0%, 96%, 100%{opacity:0;} 97%{opacity:.85;} 98.5%{opacity:0;} 99%{opacity:.65;} }
+.wx--storm .wx-bg__flash{ opacity:1; }
+.wx--storm .wx-bg__clouds{ opacity:.42; }
+
+/* ---- FOG ---- */
+.wx-bg__fog{
+  position:absolute; inset:0; opacity:0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0) 30%),
+    linear-gradient(0deg, rgba(255,255,255,.55), rgba(255,255,255,0) 30%);
+}
+.wx--fog .wx-bg__fog{ opacity:.75; }
+
+/* ---- Accessibility: respect reduced motion ---- */
+@media (prefers-reduced-motion: reduce){
+  .wx-bg__clouds, .wx-bg__clouds::before, .wx-bg__clouds::after,
+  .wx-bg__rain, .wx-bg__snow::before, .wx-bg__snow::after,
+  .wx-bg__flash { animation: none !important; }
+}
+
+/* ===== DEBUG: force animations even if prefers-reduced-motion is enabled ===== */
+.wx.wx--force-anim .wx-bg__clouds::before,
+.wx.wx--force-anim .wx-bg__clouds::after { animation: cloudDrift 60s linear infinite !important; }
+
+.wx.wx--force-anim .wx-bg__rain { animation: rainFall 900ms linear infinite !important; }
+
+.wx.wx--force-anim .wx-bg__snow::before { animation: snowFall 10s linear infinite !important; }
+.wx.wx--force-anim .wx-bg__snow::after  { animation: snowFall 14s linear infinite !important; }
+
+.wx.wx--force-anim .wx-bg__flash { animation: flash 14s linear infinite !important; }
+
+/* Optional: make motion obvious while debugging */
+.wx.wx--debug-anim .wx-bg__clouds { opacity: .6 !important; }
+/* .wx.wx--debug-anim .wx-bg__rain   { opacity: .8 !important; } */
+
+/* --- Glass header polish --- */
+.wx__header{
+  background: rgba(12,14,20,.78);
+  color: #eaf2ff;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.25);
+  backdrop-filter: blur(8px);
+}
+
+/* header should sit above content; keep or add this if missing */
+.wx__header { position: fixed; z-index: 1100; }
+
+/* search dropdown above everything in header */
+.wx__search-list { z-index: 1300; }
+
+.wx__header { left: clamp(16px, 4vw, 48px); right: clamp(16px, 4vw, 48px); }
