@@ -51,7 +51,7 @@ export default function Navbar() {
               Journal
             </Link>
             <Link to="/brain" onClick={closeMenu}>
-            Brain Games
+              Brain Games
             </Link>
             <a href="#" onClick={closeMenu}>
               +
@@ -62,7 +62,6 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <Link to="/daily">Daily dose</Link>
             <Link to="/register" onClick={closeMenu}>
               Register
             </Link>
