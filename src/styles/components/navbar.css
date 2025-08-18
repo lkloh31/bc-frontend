@@ -1,64 +1,98 @@
-@import "tailwindcss";
-
 .navbar {
-  /* background-color: transparent; */
-  background: #fff;
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  -moz-backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
 
   color: black;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2.75rem 3.5rem;
+  padding: 0.75rem 3rem;
   font-family: "Courier New", Courier, monospace;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
-  
-  padding: 2.75rem 3.5rem;
+  width: 100vw;
+  height: 120px;
   z-index: 1200;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+}
+
+.navbar.scrolled {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  -moz-backdrop-filter: blur(20px) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
 }
 
 .logo {
-  font-size: 5.5rem;
+  font-size: 4.5rem;
   font-weight: 700;
   color: black !important;
   text-decoration: none;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  min-width: fit-content;
+}
+
+.logo:hover {
+  color: #333 !important;
 }
 
 .nav-links {
   display: flex;
-  gap: 1.75rem;
+  gap: 0.3rem;
   align-items: center;
+  flex-wrap: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .nav-links a {
   color: black;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  padding: 6px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-links a:hover {
   color: #666;
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
 }
 
 .nav-logout-btn {
   background: none;
   border: none;
   color: black;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: 500;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
   font-family: inherit;
+  padding: 6px 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-logout-btn:hover {
   color: #666;
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
 }
 
 .menubutton {
@@ -69,16 +103,44 @@
   flex-direction: column;
   gap: 3px;
   padding: 8px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.menubutton:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .hamburger-line {
-  width: 25px;
-  height: 3px;
+  width: 30px;
+  height: 4px;
   background-color: black;
   transition: 0.3s;
+  border-radius: 2px;
 }
 
-@media screen and (max-width: 800px) {
+/* Hamburger animation when menu is open */
+.menubutton.open .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(7px, 7px);
+}
+
+.menubutton.open .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.menubutton.open .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* Tablet and mobile styles */
+@media screen and (max-width: 1020px) {
+  .navbar {
+    padding: 0.5rem 1.75rem;
+    height: 90px;
+    width: 100vw;
+  }
+
   .menubutton {
     display: flex;
   }
@@ -89,13 +151,22 @@
     position: absolute;
     top: 100%;
     left: 0;
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 1rem 0;
-    border-top: 1px solid #ddd;
+    width: 100vw;
+    max-height: calc(100vh - 90px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    padding: 1rem 2rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     gap: 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.3s ease;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
   }
 
   .nav-links.open {
@@ -104,19 +175,130 @@
 
   .nav-links a,
   .nav-logout-btn {
-    padding: 1rem;
+    padding: 1rem 1.5rem;
     width: 100%;
     text-align: left;
     display: block;
     color: black;
+    border-radius: 0;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
   }
 
-  .auth-buttons {
-    flex-direction: column;
-    align-items: center;
+  .nav-links a:hover,
+  .nav-logout-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #666;
+    transform: translateX(10px);
+  }
+}
+
+/* Phone landscape mode and smaller tablets */
+@media screen and (max-width: 900px) and (max-height: 500px) {
+  .navbar {
+    height: 70px;
+    padding: 0.5rem 1.5rem;
   }
 
-  .hero-section h1 {
-    font-size: 2.5em;
+  .logo {
+    font-size: 2.2rem;
+  }
+}
+
+/* Standard phone portrait and small screens */
+@media screen and (max-width: 480px) {
+  .navbar {
+    padding: 0.5rem 0.75rem;
+    height: 65px;
+    width: 100vw;
+  }
+
+  .logo {
+    font-size: 1.75rem;
+  }
+
+  .nav-links a,
+  .nav-logout-btn {
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+/* Very small phones in portrait */
+@media screen and (max-width: 320px) {
+  .navbar {
+    height: 60px;
+    padding: 0.5rem 0.5rem;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
+}
+
+/* Phone landscape mode specific adjustments */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .navbar {
+    height: 60px;
+    width: 100vw;
+    padding: 0.4rem 1rem;
+  }
+
+  .logo {
+    font-size: 1.8rem;
+  }
+
+  .nav-links {
+    width: 100vw;
+    max-height: calc(100vh - 60px);
+    padding: 0.8rem 1.5rem;
+  }
+}
+
+/* Slide down animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body {
+  padding-top: 120px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 1020px) {
+  body {
+    padding-top: 90px;
+  }
+}
+
+@media screen and (max-width: 900px) and (max-height: 500px) {
+  body {
+    padding-top: 70px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  body {
+    padding-top: 65px;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  body {
+    padding-top: 60px;
+  }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  body {
+    padding-top: 60px;
   }
 }
