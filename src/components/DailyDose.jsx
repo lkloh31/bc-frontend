@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Reorder } from "framer-motion";
 import { Link } from "react-router";
+import MoodTracker from "./MoodTracker";
 import "../styles/pages/daily.css";
 
 const STORAGE_KEY = "daily-dose-links-order";
