@@ -10,6 +10,7 @@ function Crypto() {
 
   const URL = "http://localhost:3000/daily/crypto";
 
+  // Fetch crypto data
   useEffect(() => {
     axios
       .get(URL)
@@ -17,6 +18,20 @@ function Crypto() {
       .catch((err) => console.log(err));
   }, []);
 
+  // Load favorites from localStorage on mount
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem("favorites");
+    if (savedFavorites) {
+      setFavorites(JSON.parse(savedFavorites));
+    }
+  }, []);
+
+  // Save favorites to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
+
+  // Toggle favorite
   const toggleFavorite = (crypto) => {
     const exists = favorites.find((fav) => fav.id === crypto.id);
     if (exists) {
@@ -34,14 +49,14 @@ function Crypto() {
     <div className="crypto">
       {/* Favorites Table */}
       <div className="favorites">
-        <h3>⭐ My Favorite Cryptos</h3>
+        <h3>⭐ Favorite Cryptos</h3>
         {favorites.length === 0 ? (
-          <p>No favorites yet. Click "☆ Favorite" on a coin card.</p>
+          <p>No favorites yet. Click "☆ Favorite" on a crypto card.</p>
         ) : (
           <table>
             <thead>
               <tr>
-                <th>Coin</th>
+                <th>Crypto</th>
                 <th>Price</th>
                 <th>24h Change</th>
                 <th>Action</th>
@@ -86,7 +101,7 @@ function Crypto() {
       <div className="filter">
         <input
           type="text"
-          placeholder="Filter by coin name..."
+          placeholder="Filter by crypto name..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
@@ -119,7 +134,13 @@ function Crypto() {
             </div>
 
             {/* Favorite button */}
-            <button className="fav-btn" onClick={() => toggleFavorite(crypto)}>
+            <button
+              className="fav-btn"
+              onClick={() => {
+                toggleFavorite(crypto);
+                setFilter(""); // clear filter when favoriting
+              }}
+            >
               {favorites.find((fav) => fav.id === crypto.id)
                 ? "★ Remove"
                 : "☆ Favorite"}
