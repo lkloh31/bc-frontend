@@ -45,8 +45,7 @@ export default function JournalPage() {
   const entriesForSelectedDate = useMemo(() => {
     return entries.filter(
       (entry) =>
-        toYYYYMMDD(new Date(entry.entry_timestamp)) ===
-        toYYYYMMDD(selectedDate)
+        toYYYYMMDD(new Date(entry.entry_timestamp)) === toYYYYMMDD(selectedDate)
     );
   }, [entries, selectedDate]);
 
@@ -83,11 +82,11 @@ export default function JournalPage() {
   const handleSelectEntry = (entry) => {
     setSelectedEntry(entry);
   };
-  
+
   const handleNewEntry = () => {
     // Clears the form, preparing it for a new entry on the currently selected date
     setSelectedEntry(null);
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -143,73 +142,96 @@ export default function JournalPage() {
             ) : null
           }
         />
-        <button
-            onClick={handleNewEntry}
-            className="button-primary"
-            style={{ width: '100%', marginTop: "1rem" }}
-          >
-            + New Entry for Selected Date
-        </button>
+        <div className="calendar-note">Select a date to view/add entries.</div>
       </aside>
+
       <main className="journal-main">
         {/* List of entries for the selected day */}
-        <div className="daily-entries-list">
+        <section className="daily-entries-section">
           <h4>
-            Entries for {selectedDate.toLocaleDateString()}
+            Entries for{" "}
+            {selectedDate.toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
           </h4>
-          {entriesForSelectedDate.length > 0 ? (
-            entriesForSelectedDate.map(entry => (
-              <div key={entry.id} onClick={() => handleSelectEntry(entry)} className={`entry-item ${selectedEntry?.id === entry.id ? 'active-entry' : ''}`}>
-                {entry.title}
-              </div>
-            ))
-          ) : (
-            <p>No entry for this day.</p>
-          )}
-        </div>
-
-        <hr />
-        
-        {/* The Form for creating/editing */}
-        <form className="journal-form" onSubmit={handleSubmit}>
-          <h5>{selectedEntry ? "Edit Entry" : "Create New Entry"}</h5>
-          <input
-            type="text"
-            name="title"
-            placeholder="Entry Title"
-            value={formData.title}
-            onChange={handleInputChange}
-            required
-          />
-          <textarea
-            name="content"
-            placeholder="Start writing..."
-            value={formData.content}
-            onChange={handleInputChange}
-            required
-          ></textarea>
-          <input
-            type="text"
-            name="tags"
-            placeholder="Tags (e.g., work, personal, ideas)"
-            value={formData.tags}
-            onChange={handleInputChange}
-          />
-          <div className="form-buttons">
-            <button type="submit" className="button-primary">
-              {selectedEntry ? "Save Changes" : "Create Entry"}
-            </button>
-            {selectedEntry && (
-              <button
-                type="button"
-                className="button-danger"
-                onClick={handleDelete}
-              >
-                Delete
-              </button>
+          <div className="entries-list">
+            {entriesForSelectedDate.length > 0 ? (
+              entriesForSelectedDate.map((entry) => (
+                <div
+                  key={entry.id}
+                  onClick={() => handleSelectEntry(entry)}
+                  className={`entry-item ${
+                    selectedEntry?.id === entry.id ? "active-entry" : ""
+                  }`}
+                >
+                  <div className="entry-title">{entry.title}</div>
+                  {entry.tags && (
+                    <div
+                      className="entry-tags"
+                      style={{
+                        fontSize: "12px",
+                        opacity: 0.7,
+                        marginTop: "4px",
+                      }}
+                    >
+                      {entry.tags}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="no-entries">No entries for this day yet.</div>
             )}
           </div>
-        </form>
+        </section>
+
+        {/* The Form for creating/editing */}
+        <section className="journal-form-section">
+          <form className="journal-form" onSubmit={handleSubmit}>
+            <h5 className="form-header">
+              {selectedEntry ? "Edit Entry" : "Create New Entry"}
+            </h5>
+            <input
+              type="text"
+              name="title"
+              placeholder="Entry Title"
+              value={formData.title}
+              onChange={handleInputChange}
+              required
+            />
+            <textarea
+              name="content"
+              placeholder="Start writing your thoughts..."
+              value={formData.content}
+              onChange={handleInputChange}
+              required
+            ></textarea>
+            <input
+              type="text"
+              name="tags"
+              placeholder="Tags (e.g., work, personal, ideas)"
+              value={formData.tags}
+              onChange={handleInputChange}
+            />
+            <div className="form-buttons">
+              <button type="submit" className="button-primary">
+                {selectedEntry ? "Save Changes" : "Create Entry"}
+              </button>
+              {selectedEntry && (
+                <button
+                  type="button"
+                  className="button-danger"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
+              )}
+            </div>
+          </form>
+        </section>
       </main>
     </div>
   );
