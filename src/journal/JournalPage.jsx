@@ -57,9 +57,9 @@ export default function JournalPage() {
   // --- NEW: Memoized list of all unique tags ---
   const allUniqueTags = useMemo(() => {
     const tagsSet = new Set();
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       if (entry.tags) {
-        entry.tags.split(',').forEach(tag => {
+        entry.tags.split(",").forEach((tag) => {
           if (tag.trim()) tagsSet.add(tag.trim());
         });
       }
@@ -73,16 +73,24 @@ export default function JournalPage() {
 
     // Filter by selected tag first
     if (selectedTag) {
-      tempEntries = tempEntries.filter(entry =>
-        entry.tags && entry.tags.split(',').map(t => t.trim()).includes(selectedTag)
+      tempEntries = tempEntries.filter(
+        (entry) =>
+          entry.tags &&
+          entry.tags
+            .split(",")
+            .map((t) => t.trim())
+            .includes(selectedTag)
       );
     }
 
     // Then, filter by search term (searches title and tags)
     if (searchTerm) {
-      tempEntries = tempEntries.filter(entry =>
-        (entry.title && entry.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (entry.tags && entry.tags.toLowerCase().includes(searchTerm.toLowerCase()))
+      tempEntries = tempEntries.filter(
+        (entry) =>
+          (entry.title &&
+            entry.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (entry.tags &&
+            entry.tags.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
@@ -96,26 +104,43 @@ export default function JournalPage() {
       return filteredEntries;
     }
     return entries.filter(
-      (e) => toLocalYYYYMMDD(new Date(e.entry_timestamp)) === toLocalYYYYMMDD(selectedDate)
+      (e) =>
+        toLocalYYYYMMDD(new Date(e.entry_timestamp)) ===
+        toLocalYYYYMMDD(selectedDate)
     );
   }, [entries, selectedDate, searchTerm, selectedTag, filteredEntries]);
 
   // --- All other state management and handlers are unchanged ---
-  const entryDateSet = useMemo(() => new Set(entries.map(e => toLocalYYYYMMDD(new Date(e.entry_timestamp)))), [entries]);
-  const moodDateMap = useMemo(() => new Map(moods.map(m => [toLocalYYYYMMDD(new Date(m.mood_date)), m.mood_value])), [moods]);
+  const entryDateSet = useMemo(
+    () =>
+      new Set(entries.map((e) => toLocalYYYYMMDD(new Date(e.entry_timestamp)))),
+    [entries]
+  );
+  const moodDateMap = useMemo(
+    () =>
+      new Map(
+        moods.map((m) => [toLocalYYYYMMDD(new Date(m.mood_date)), m.mood_value])
+      ),
+    [moods]
+  );
   const selectedDayMood = useMemo(() => {
     const moodValue = moodDateMap.get(toLocalYYYYMMDD(selectedDate));
-    return moodValue ? `${moodMap[moodValue].emoji} ${moodMap[moodValue].label}` : "No mood logged";
+    return moodValue
+      ? `${moodMap[moodValue].emoji} ${moodMap[moodValue].label}`
+      : "No mood logged";
   }, [selectedDate, moodDateMap]);
   const monthMood = useMemo(() => {
     const month = activeStartDate.getMonth();
     const year = activeStartDate.getFullYear();
-    const moodsForMonth = moods.filter(m => {
+    const moodsForMonth = moods.filter((m) => {
       const moodDate = new Date(m.mood_date);
       return moodDate.getMonth() === month && moodDate.getFullYear() === year;
     });
     if (moodsForMonth.length === 0) return "Not logged yet.";
-    const total = moodsForMonth.reduce((sum, mood) => sum + Number(mood.mood_value), 0);
+    const total = moodsForMonth.reduce(
+      (sum, mood) => sum + Number(mood.mood_value),
+      0
+    );
     const avgValue = Math.round(total / moodsForMonth.length);
     if (avgValue < 1 || avgValue > 5 || !moodMap[avgValue]) return "N/A";
     return `${moodMap[avgValue].emoji} ${moodMap[avgValue].label}`;
@@ -131,17 +156,22 @@ export default function JournalPage() {
 
   useEffect(() => {
     if (selectedEntry) {
-      setFormData({ title: selectedEntry.title, content: selectedEntry.content || "", tags: selectedEntry.tags || "" });
+      setFormData({
+        title: selectedEntry.title,
+        content: selectedEntry.content || "",
+        tags: selectedEntry.tags || "",
+      });
     } else {
       setFormData(BLANK_ENTRY);
     }
   }, [selectedEntry]);
 
-  const handleInputChange = (e) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleInputChange = (e) =>
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   const handleSelectEntry = (entry) => setSelectedEntry(entry);
   const handleNewEntry = () => setSelectedEntry(null);
   const handleTagClick = (tag) => {
-    setSelectedTag(currentTag => (currentTag === tag ? null : tag)); // Toggle selection
+    setSelectedTag((currentTag) => (currentTag === tag ? null : tag)); // Toggle selection
     setSearchTerm(""); // Clear search when a tag is clicked
   };
   const handleSearchChange = (e) => {
@@ -154,11 +184,24 @@ export default function JournalPage() {
     try {
       let updatedEntry;
       if (selectedEntry) {
-        updatedEntry = await request(`/journal/${selectedEntry.id}`, { method: "PUT", body: formData });
-        setEntries(entries.map((e) => (e.id === selectedEntry.id ? updatedEntry : e)));
+        updatedEntry = await request(`/journal/${selectedEntry.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+        setEntries(
+          entries.map((e) => (e.id === selectedEntry.id ? updatedEntry : e))
+        );
       } else {
-        const newEntryData = { ...formData, entry_timestamp: toLocalYYYYMMDD(selectedDate) };
-        updatedEntry = await request("/journal", { method: "POST", body: newEntryData });
+        const newEntryData = {
+          ...formData,
+          entry_timestamp: toLocalYYYYMMDD(selectedDate),
+        };
+        updatedEntry = await request("/journal", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newEntryData),
+        });
         setEntries([updatedEntry, ...entries]);
       }
       setSelectedEntry(updatedEntry);
@@ -183,7 +226,9 @@ export default function JournalPage() {
         <Calendar
           onChange={setSelectedDate}
           value={selectedDate}
-          onActiveStartDateChange={({ activeStartDate }) => setActiveStartDate(activeStartDate)}
+          onActiveStartDateChange={({ activeStartDate }) =>
+            setActiveStartDate(activeStartDate)
+          }
           tileClassName={({ date, view }) => {
             if (view === "month" && moodDateMap.has(toLocalYYYYMMDD(date))) {
               return `mood-${moodDateMap.get(toLocalYYYYMMDD(date))}`;
@@ -196,14 +241,14 @@ export default function JournalPage() {
           }
         />
         <div className="mood-summary">
-            <div className="selected-day-mood">
-              <h4>Selected Day's Mood:</h4>
-              <p>{selectedDayMood}</p>
-            </div>
-            <div className="monthly-mood">
-              <h4>This Month's Average Mood:</h4>
-              <p>{monthMood}</p>
-            </div>
+          <div className="selected-day-mood">
+            <h4>Selected Day's Mood:</h4>
+            <p>{selectedDayMood}</p>
+          </div>
+          <div className="monthly-mood">
+            <h4>This Month's Average Mood:</h4>
+            <p>{monthMood}</p>
+          </div>
         </div>
         {/* --- Search and Filter Section --- */}
         <div className="search-filter-section">
@@ -215,20 +260,29 @@ export default function JournalPage() {
             onChange={handleSearchChange}
           />
           <div className="tags-collapsible">
-            <button className="tags-toggle" onClick={() => setTagsVisible(!tagsVisible)}>
-              Filter by Tag {tagsVisible ? '▲' : '▼'}
+            <button
+              className="tags-toggle"
+              onClick={() => setTagsVisible(!tagsVisible)}
+            >
+              Filter by Tag {tagsVisible ? "▲" : "▼"}
             </button>
             {tagsVisible && (
               <div className="tags-list">
-                {allUniqueTags.length > 0 ? allUniqueTags.map(tag => (
-                  <button
-                    key={tag}
-                    className={`tag-button ${selectedTag === tag ? 'active' : ''}`}
-                    onClick={() => handleTagClick(tag)}
-                  >
-                    {tag}
-                  </button>
-                )) : <p className="no-tags">No tags created yet.</p>}
+                {allUniqueTags.length > 0 ? (
+                  allUniqueTags.map((tag) => (
+                    <button
+                      key={tag}
+                      className={`tag-button ${
+                        selectedTag === tag ? "active" : ""
+                      }`}
+                      onClick={() => handleTagClick(tag)}
+                    >
+                      {tag}
+                    </button>
+                  ))
+                ) : (
+                  <p className="no-tags">No tags created yet.</p>
+                )}
               </div>
             )}
           </div>
@@ -239,17 +293,51 @@ export default function JournalPage() {
       <main className="journal-main">
         {/* Column 1 (in main): The Form */}
         <div className="journal-form-section">
-          <button onClick={handleNewEntry} className="button-primary new-entry-button">
+          <button
+            onClick={handleNewEntry}
+            className="button-primary new-entry-button"
+          >
             + New Entry
           </button>
           <form className="journal-form" onSubmit={handleSubmit}>
-            <h5 className="form-header">{selectedEntry ? "Edit Entry" : "Create New Entry"}</h5>
-            <input type="text" name="title" placeholder="Entry Title" value={formData.title} onChange={handleInputChange} required />
-            <textarea name="content" placeholder="Start writing..." value={formData.content} onChange={handleInputChange} required></textarea>
-            <input type="text" name="tags" placeholder="Tags (e.g., work, personal, ideas)" value={formData.tags} onChange={handleInputChange}/>
+            <h5 className="form-header">
+              {selectedEntry ? "Edit Entry" : "Create New Entry"}
+            </h5>
+            <input
+              type="text"
+              name="title"
+              placeholder="Entry Title"
+              value={formData.title}
+              onChange={handleInputChange}
+              required
+            />
+            <textarea
+              name="content"
+              placeholder="Start writing..."
+              value={formData.content}
+              onChange={handleInputChange}
+              required
+            ></textarea>
+            <input
+              type="text"
+              name="tags"
+              placeholder="Tags (e.g., work, personal, ideas)"
+              value={formData.tags}
+              onChange={handleInputChange}
+            />
             <div className="form-buttons">
-              <button type="submit" className="button-primary">{selectedEntry ? "Save Changes" : "Create Entry"}</button>
-              {selectedEntry && (<button type="button" className="button-danger" onClick={handleDelete}>Delete</button>)}
+              <button type="submit" className="button-primary">
+                {selectedEntry ? "Save Changes" : "Create Entry"}
+              </button>
+              {selectedEntry && (
+                <button
+                  type="button"
+                  className="button-danger"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </form>
         </div>
@@ -257,7 +345,9 @@ export default function JournalPage() {
         {/* Column 2 (in main): The Entry List */}
         <div className="daily-entries-section">
           <h4>
-            {searchTerm || selectedTag ? "Filtered Results" : `Entries for ${selectedDate.toLocaleDateString()}`}
+            {searchTerm || selectedTag
+              ? "Filtered Results"
+              : `Entries for ${selectedDate.toLocaleDateString()}`}
           </h4>
           <div className="entries-list">
             {entriesForSelectedDate.length > 0 ? (
@@ -265,14 +355,18 @@ export default function JournalPage() {
                 <div
                   key={entry.id}
                   onClick={() => handleSelectEntry(entry)}
-                  className={`entry-item ${selectedEntry?.id === entry.id ? "active-entry" : ""}`}
+                  className={`entry-item ${
+                    selectedEntry?.id === entry.id ? "active-entry" : ""
+                  }`}
                 >
                   {entry.title}
                 </div>
               ))
             ) : (
               <p className="no-entries">
-                {searchTerm || selectedTag ? "No matching entries found." : "No entry for this day."}
+                {searchTerm || selectedTag
+                  ? "No matching entries found."
+                  : "No entry for this day."}
               </p>
             )}
           </div>
