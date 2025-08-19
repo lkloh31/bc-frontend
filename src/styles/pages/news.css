@@ -10,7 +10,7 @@
 
 .news-categories {
   position: sticky;
-  top: 200px; /* main navbar height + news navbar height */
+  top: 100px; /* main navbar height + news navbar height */
   height: 60px;
   z-index: 150;
   padding: 10px 0; /* adds 10px space on top and bottom */
@@ -19,43 +19,4 @@
 .articles-wrapper {
   height: calc(100vh - 290px);
   overflow-y: auto;
-}
-
-/* Media queries for responsiveness */
-@media screen and (max-width: 1024px) {
-  .articles-wrapper {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .articles-wrapper {
-    grid-template-columns: 1fr;
-  }
-
-  .news-container nav {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .news-container nav input {
-    margin-bottom: 5px;
-  }
-
-  .news-categories {
-    top: 180px;
-    height: auto;
-    gap: 8px;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .news-categories div {
-    padding: 4px 8px;
-    font-size: 14px;
-  }
-
-  .articles-wrapper {
-    gap: 15px;
-  }
 }
