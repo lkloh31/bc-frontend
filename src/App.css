@@ -4,13 +4,15 @@
   flex-direction: column;
   background-color: white;
   color: black;
+  padding-top: 10rem;
 }
 
 .main-content {
   flex: 1;
-  padding-top: 80px;
   display: flex;
+  flex-direction: column; /* stack content vertically */
   align-items: center;
-  justify-content: center;
-  min-height: calc(100vh - 80px);
+  justify-content: flex-start; /* start from top */
+  min-height: calc(100vh - 120px); /* leave space for bottom player */
+  padding-bottom: 120px; /* ensures content is above player */
 }
