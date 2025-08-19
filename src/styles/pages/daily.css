@@ -48,3 +48,64 @@
 .daily-dose-links a:hover {
   background-color: #ddd;
 }
+
+/* ============================= */
+/* Responsive adjustments */
+/* ============================= */
+
+/* Medium screens (tablet) */
+@media (max-width: 768px) {
+  .daily-dose {
+    max-width: 90%; /* fit most of the screen */
+    padding: 1.5rem;
+  }
+
+  .daily-dose h1 {
+    font-size: 1.8rem;
+  }
+
+  .daily-dose h2 {
+    font-size: 1.2rem;
+  }
+
+  .daily-dose h3 {
+    font-size: 0.9rem;
+  }
+
+  .daily-dose-links {
+    flex-direction: column; /* stack links vertically */
+    gap: 10px;
+  }
+
+  .daily-dose-links a {
+    width: 100%; /* make links full width */
+    text-align: center;
+  }
+}
+
+/* Small screens (mobile) */
+@media (max-width: 480px) {
+  .daily-dose {
+    padding: 1rem;
+  }
+
+  .daily-dose h1 {
+    font-size: 1.5rem;
+  }
+
+  .daily-dose h2 {
+    font-size: 1rem;
+  }
+
+  .daily-dose h3 {
+    font-size: 0.8rem;
+  }
+
+  .daily-dose-links {
+    gap: 8px;
+  }
+
+  .daily-dose-links a {
+    padding: 0.4rem 0.8rem;
+  }
+}
