@@ -11,7 +11,6 @@ export default function DailyDose() {
     { id: "weather", label: "Weather", path: "/daily/weather" },
     { id: "exchange", label: "Exchange rates", path: "/daily/exchange" },
     { id: "stocks", label: "Stocks", path: "/daily/stocks" },
-    { id: "mood", label: "Mood of the Day", path: "/daily/mood" },
     { id: "crypto", label: "Cryptocurrency", path: "/daily/crypto" },
   ];
 

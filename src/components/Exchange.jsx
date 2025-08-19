@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import "../styles/pages/exchange.css";
 
-const BASE_URL = "http://localhost:3000/daily/exchange";
+const BASE_RATES_URL = "http://localhost:3000/daily/exchange";
+const CODES_URL = "http://localhost:3000/daily/exchange/currency-codes";
 
 export default function Exchange() {
   const [rates, setRates] = useState([]);
@@ -13,9 +14,9 @@ export default function Exchange() {
   const [error, setError] = useState(null);
 
   // Filter state
-  const [filter, setFilter] = useState(() => {
-    return localStorage.getItem("currencyFilter") || "";
-  });
+  const [filter, setFilter] = useState(
+    () => localStorage.getItem("currencyFilter") || ""
+  );
 
   // Favourites state
   const [favourites, setFavourites] = useState(() => {
@@ -32,34 +33,47 @@ export default function Exchange() {
     localStorage.setItem("favourites", JSON.stringify(favourites));
   }, [favourites]);
 
+  // Fetch rates and currency codes
   useEffect(() => {
-    async function fetchRates() {
+    async function fetchData() {
       try {
-        const res = await fetch(BASE_URL);
-        if (!res.ok) throw new Error("Failed to fetch exchange rates");
-        const data = await res.json();
-        setRates(data);
+        const [ratesRes, codesRes] = await Promise.all([
+          fetch(BASE_RATES_URL),
+          fetch(CODES_URL),
+        ]);
 
-        // Build unique currency list
-        const currencies = Array.from(
+        if (!ratesRes.ok) throw new Error("Failed to fetch exchange rates");
+        if (!codesRes.ok) throw new Error("Failed to fetch currency codes");
+
+        const ratesData = await ratesRes.json();
+        const codesData = await codesRes.json();
+
+        setRates(ratesData);
+
+        // Map codes to include names
+        const options = Array.from(
           new Set(
-            data
-              .map((rate) => rate.base_currency)
-              .concat(data.map((rate) => rate.currency_code))
+            ratesData
+              .map((r) => r.base_currency)
+              .concat(ratesData.map((r) => r.currency_code))
           )
-        );
-        setCurrencyOptions(currencies);
+        ).map((code) => {
+          const found = codesData.find((c) => c.currency_code === code);
+          return { code, name: found ? found.currency_name : code };
+        });
+
+        setCurrencyOptions(options);
 
         // Default selections
-        setFromCurrency(data[0].base_currency);
-        setToCurrency(data[0].currency_code);
+        setFromCurrency(ratesData[0]?.base_currency || "USD");
+        setToCurrency(ratesData[0]?.currency_code || "EUR");
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     }
-    fetchRates();
+    fetchData();
   }, []);
 
   if (loading) return <p className="exchange-loading">Loading rates...</p>;
@@ -74,32 +88,31 @@ export default function Exchange() {
     const toRate = rates.find(
       (r) => r.currency_code === to || r.base_currency === to
     );
-
     if (!fromRate || !toRate) return 0;
 
     const baseAmount =
       from === fromRate.base_currency
         ? amount
         : amount / fromRate.exchange_rate;
-
     const converted =
       to === toRate.base_currency
         ? baseAmount
         : baseAmount * toRate.exchange_rate;
-
     return converted.toFixed(2);
   };
 
-  // Add to favourites
-  const addFavourite = (currencyCode) => {
-    if (!favourites.includes(currencyCode)) {
-      setFavourites([...favourites, currencyCode]);
-    }
+  // Favourites
+  const addFavourite = (code) => {
+    if (!favourites.includes(code)) setFavourites([...favourites, code]);
+  };
+  const removeFavourite = (code) => {
+    setFavourites(favourites.filter((c) => c !== code));
   };
 
-  // Remove from favourites
-  const removeFavourite = (currencyCode) => {
-    setFavourites(favourites.filter((c) => c !== currencyCode));
+  // Helper to get currency name
+  const getCurrencyName = (code) => {
+    const found = currencyOptions.find((c) => c.code === code);
+    return found ? found.name : code;
   };
 
   return (
@@ -118,9 +131,9 @@ export default function Exchange() {
             value={fromCurrency}
             onChange={(e) => setFromCurrency(e.target.value)}
           >
-            {currencyOptions.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            {currencyOptions.map(({ code, name }) => (
+              <option key={code} value={code}>
+                {code} - {name}
               </option>
             ))}
           </select>
@@ -137,9 +150,9 @@ export default function Exchange() {
             value={toCurrency}
             onChange={(e) => setToCurrency(e.target.value)}
           >
-            {currencyOptions.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            {currencyOptions.map(({ code, name }) => (
+              <option key={code} value={code}>
+                {code} - {name}
               </option>
             ))}
           </select>
@@ -149,11 +162,12 @@ export default function Exchange() {
       {/* Favourites Table */}
       {favourites.length > 0 && (
         <>
-          <h2 className="exchange-title">⭐ Favourite Currencies</h2>
+          <h2 className="exchange-title">⭐ Favorite Currencies</h2>
           <table className="exchange-table">
             <thead>
               <tr>
                 <th>Currency</th>
+                <th>Name</th>
                 <th>Rate</th>
                 <th>Base</th>
                 <th>Last Updated</th>
@@ -162,10 +176,11 @@ export default function Exchange() {
             </thead>
             <tbody>
               {rates
-                .filter((rate) => favourites.includes(rate.currency_code))
+                .filter((r) => favourites.includes(r.currency_code))
                 .map((rate) => (
                   <tr key={rate.currency_code}>
                     <td>{rate.currency_code}</td>
+                    <td>{getCurrencyName(rate.currency_code)}</td>
                     <td>{rate.exchange_rate}</td>
                     <td>{rate.base_currency}</td>
                     <td>{new Date(rate.last_updated).toLocaleString()}</td>
@@ -187,16 +202,17 @@ export default function Exchange() {
       <h2 className="exchange-title">Exchange Rates Table</h2>
       <input
         type="text"
-        placeholder="Filter currency..."
+        placeholder="Filter by code or name..."
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-        style={{ marginBottom: "10px", padding: "5px" }}
+        className="filter-input"
       />
 
       <table className="exchange-table">
         <thead>
           <tr>
             <th>Currency</th>
+            <th>Name</th>
             <th>Rate</th>
             <th>Base</th>
             <th>Last Updated</th>
@@ -205,22 +221,30 @@ export default function Exchange() {
         </thead>
         <tbody>
           {rates
-            .filter(
-              (rate) =>
-                rate.currency_code
-                  .toLowerCase()
-                  .includes(filter.toLowerCase()) ||
-                rate.base_currency.toLowerCase().includes(filter.toLowerCase())
-            )
+            .filter((r) => {
+              const name = getCurrencyName(r.currency_code);
+              const query = filter.toLowerCase();
+              return (
+                r.currency_code.toLowerCase().includes(query) ||
+                name.toLowerCase().includes(query) ||
+                r.base_currency.toLowerCase().includes(query)
+              );
+            })
             .map((rate) => (
               <tr key={rate.currency_code}>
                 <td>{rate.currency_code}</td>
+                <td>{getCurrencyName(rate.currency_code)}</td>
                 <td>{rate.exchange_rate}</td>
                 <td>{rate.base_currency}</td>
                 <td>{new Date(rate.last_updated).toLocaleString()}</td>
                 <td>
-                  <button onClick={() => addFavourite(rate.currency_code)}>
-                    ⭐ Add
+                  <button
+                    onClick={() => {
+                      addFavourite(rate.currency_code);
+                      setFilter(""); // clear filter when favoriting
+                    }}
+                  >
+                    ⭐ Favorite
                   </button>
                 </td>
               </tr>

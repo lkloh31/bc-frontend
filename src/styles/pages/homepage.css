@@ -1,30 +1,28 @@
 .homepage {
   max-width: 600px;
-  text-align: center;
+  width: 90%;
+  margin: 0 auto;
   padding: 2rem;
   font-family: "Courier New", Courier, monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.intro-section h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-  margin-bottom: 1rem;
-  color: black;
-}
-
+/* Intro section */
 .intro-section h2 {
   font-size: 1.8em;
   margin-bottom: 1rem;
   color: black;
+  text-align: center;
 }
 
 .intro-section h3 {
   font-size: 1.2em;
   margin-bottom: 2rem;
   color: black;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
+  font-weight: 200;
+  text-align: center;
 }
 
 .auth-buttons {
@@ -32,4 +30,155 @@
   gap: 1rem;
   justify-content: center;
   margin-top: 2rem;
+}
+
+.login-prompt {
+  font-size: 15px;
+  margin-top: 1rem;
+}
+
+/* Spotify embed on homepage */
+.spotify-embed {
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+/* ============================= */
+/* MoodTracker inside homepage */
+/* ============================= */
+.homepage-mood-section .mood-tracker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 5rem;
+}
+
+.homepage-mood-section .mood-tracker h4 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Mood options grid */
+.homepage-mood-section .mood-tracker .mood-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns on desktop */
+  gap: 1.5rem; /* spacing between cards */
+  justify-items: center;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+/* Mood button style */
+.homepage-mood-section .mood-tracker .mood-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 110px; /* slightly bigger cards */
+  padding: 0.8rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  font-size: 1rem;
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.homepage-mood-section .mood-tracker .mood-button:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background-color: #e0e0e0;
+}
+
+.homepage-mood-section .mood-tracker .mood-emoji {
+  font-size: 2rem;
+}
+
+.homepage-mood-section .mood-tracker .mood-label {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.homepage-mood-section .mood-tracker .mood-message {
+  margin-top: 1rem;
+  text-align: center;
+  font-style: italic;
+  color: #333;
+}
+
+/* Spotify player */
+.spotify-player {
+  max-width: 500px;
+  margin: 1rem auto;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.spotify-player iframe {
+  width: 100%;
+  height: 380px;
+  border: none;
+}
+
+/* ============================= */
+/* Responsive adjustments */
+/* ============================= */
+
+/* Medium screens (tablet) */
+@media (max-width: 768px) {
+  .main-content {
+    padding-bottom: 200px; /* leave room for Spotify, increase if needed */
+  }
+
+  .homepage-mood-section .mood-tracker .mood-options {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    gap: 1.25rem;
+  }
+
+  .login-prompt {
+    order: 2;
+  }
+  .spotify-player {
+    order: 3;
+    margin-top: 1rem; /* add spacing so it doesn’t crowd */
+  }
+}
+
+/* Small screens (mobile) */
+@media (max-width: 480px) {
+  .main-content {
+    padding-bottom: 200px; /* leave room for Spotify, increase if needed */
+  }
+
+  .homepage-mood-section .mood-tracker .mood-options {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    gap: 1rem;
+  }
+
+  .homepage-mood-section .mood-tracker .mood-button {
+    max-width: 90px;
+    font-size: 0.9rem;
+  }
+
+  .homepage-mood-section .mood-tracker .mood-emoji {
+    font-size: 1.8rem;
+  }
+
+  .login-prompt {
+    order: 2;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 1rem; /* ensure space BELOW the text */
+  }
+
+  .spotify-player {
+    order: 3;
+    position: relative;
+    z-index: 1;
+    margin-top: 1rem; /* double safety */
+  }
 }

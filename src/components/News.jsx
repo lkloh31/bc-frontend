@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import NewsItems from "./NewsItems";
@@ -7,7 +7,7 @@ import "../styles/pages/news.css";
 
 export default function News() {
   const categories = [
-    "Favourites",
+    "Favorites",
     "Business",
     "Technology",
     "Sports",
@@ -22,19 +22,19 @@ export default function News() {
   const [page, setPage] = useState(1);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [favourites, setFavourites] = useState([]);
+  const [favorites, setFavorites] = useState([]);
   const [hasMore, setHasMore] = useState(true);
 
   // Load favourites from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem("favourites");
-    if (saved) setFavourites(JSON.parse(saved));
+    const saved = localStorage.getItem("favorites");
+    if (saved) setFavorites(JSON.parse(saved));
   }, []);
 
-  // Save favourites whenever changed
+  // Store favourites whenever changed
   useEffect(() => {
-    localStorage.setItem("favourites", JSON.stringify(favourites));
-  }, [favourites]);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
 
   // Fetch articles from backend
   const fetchArticles = async (searchTerm, pageNum) => {
@@ -47,7 +47,7 @@ export default function News() {
       const { articles: newArticles, totalResults } = res.data;
 
       setArticles((prev) => {
-        const updated = pageNum === 1 ? newArticles : [...prev, ...newArticles];
+        const updated = pageNum === 1 ? newArticles : [...newArticles, ...prev];
         setHasMore(updated.length < totalResults);
         return updated;
       });
@@ -58,27 +58,26 @@ export default function News() {
     setLoading(false);
   };
 
-  // Effect: fetch on search or page changes
+  // Fetch when search/page/favourites changes
   useEffect(() => {
-    if (search.toLowerCase() === "favourites") {
-      setArticles(favourites);
+    if (search.toLowerCase() === "favorites") {
+      setArticles(favorites);
       setHasMore(false);
     } else {
       fetchArticles(search, page);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, page, favourites]);
+  }, [search, page, favorites]);
 
-  // Handle new search or category click
+  // Handle new search or category click - called when the user clicks a category or presses Enter in the search bar.
   const searchNews = (term) => {
     const trimmed = term.trim();
 
     setPage(1);
     setHasMore(true);
 
-    if (trimmed.toLowerCase() === "favourites") {
-      setSearch("Favourites");
-      setArticles(favourites);
+    if (trimmed.toLowerCase() === "favorites") {
+      setSearch("Favorites");
+      setArticles(favorites);
       setHasMore(false);
       setInputValue("");
     } else {
@@ -87,7 +86,7 @@ export default function News() {
     }
   };
 
-  // Load next page
+  // Load next page - Infinite scroll pagination trigger
   const fetchMoreData = () => {
     if (hasMore && !loading) {
       setPage((prev) => prev + 1);
@@ -95,15 +94,15 @@ export default function News() {
   };
 
   // Toggle favourite status
-  const toggleFavourite = (article) => {
-    const exists = favourites.some((fav) => fav.url === article.url);
+  const toggleFavorite = (article) => {
+    const exists = favorites.some((fav) => fav.url === article.url);
     const updated = exists
-      ? favourites.filter((fav) => fav.url !== article.url)
-      : [...favourites, article];
+      ? favorites.filter((fav) => fav.url !== article.url)
+      : [...favorites, article];
 
-    setFavourites(updated);
+    setFavorites(updated);
 
-    if (search === "Favourites") {
+    if (search === "Favorites") {
       setArticles(updated);
     }
   };
@@ -133,7 +132,7 @@ export default function News() {
 
       {/* Categories */}
       <div className="news-categories w-full">
-        <div className="flex justify-center items-center border-b-1 pb-[10px]">
+        <div className="flex justify-center items-center pb-[10px]">
           {categories.map((cat) => (
             <div
               key={cat}
@@ -156,14 +155,14 @@ export default function News() {
           dataLength={articles.length}
           next={fetchMoreData}
           hasMore={search.toLowerCase() !== "favourites" && hasMore}
-          loader={<h4>Loading...</h4>}
+          // loader={<h4>Loading...</h4>}
           scrollThreshold={0.9}
         >
           <div className="grid grid-cols-3 gap-5 mt-[40px]">
             <NewsItems
               articles={articles}
-              toggleFavourite={toggleFavourite}
-              favourites={favourites}
+              toggleFavorite={toggleFavorite}
+              favorites={favorites}
             />
           </div>
         </InfiniteScroll>

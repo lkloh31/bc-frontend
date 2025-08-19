@@ -7,6 +7,7 @@ import "../styles/pages/auth.css";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // 👈 new state
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -45,16 +46,23 @@ export default function Login() {
             />
           </div>
 
-          <div className="form-group">
+          <div className="form-group password-group">
             <label htmlFor="password">Password</label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"} // 👈 toggle here
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="toggle-password-btn"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
           </div>
 
           <button type="submit" disabled={loading}>
