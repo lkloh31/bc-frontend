@@ -1,5 +1,3 @@
-/* BrainGames – monochrome theme (white background, black text) */
-
 :root{
   --bg:#ffffff;
   --bg-soft:#fafafa;
@@ -12,8 +10,6 @@
   --radius:14px;
   --shadow:0 1px 1px rgba(0,0,0,.04), 0 12px 24px rgba(0,0,0,.08);
 }
-
-/* page shell */
 .bg-container{
   background: var(--bg);
   color: var(--text);
@@ -21,7 +17,6 @@
 }
 .bg-wrap{ width:min(980px,92vw); margin:0 auto; padding:24px 0 64px; }
 
-/* top bar */
 .topbar{ display:flex; align-items:center; justify-content:space-between; padding:8px 0 6px; }
 .brand{ display:flex; align-items:center; gap:12px; }
 .brand-logo{
@@ -31,7 +26,6 @@
 }
 .brand h1{ margin:0; font-size:22px; letter-spacing:.2px; }
 
-/* hero header */
 .hero{
   margin-top:12px; padding:18px; border-radius:var(--radius);
   background: var(--bg-soft);
@@ -41,21 +35,18 @@
 .hero h2{ margin:4px 0 8px; font-size:28px; }
 .hero p{ margin:0; color:var(--muted); }
 
-/* centered grid of game cards */
 .grid{
   margin-top:22px;
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap:18px;
 
-  /* keep the grid centered and not too wide */
   max-width: 900px;
   margin-left:auto;
   margin-right:auto;
   justify-content:center;
 }
 
-/* cards */
 .card{
   display:flex; flex-direction:column; gap:10px; min-height:158px;
   padding:18px; border-radius:var(--radius); text-decoration:none; color:inherit;
@@ -84,12 +75,11 @@
   padding:6px 10px; border-radius:999px; border:1px solid #e5e7eb;
 }
 
-/* text utilities + footer */
 .muted{ color:var(--muted); }
 .mt{ margin-top:12px; }
 .footer{ margin-top:28px; color:var(--muted); font-size:14px; text-align:center; }
 
-/* centered playable game area */
+
 .host-stage {
   margin-top: 24px;
   display: flex;
