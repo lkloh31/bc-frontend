@@ -69,7 +69,7 @@ export default function Navbar() {
               Journal
             </Link>
             <Link to="/brain" onClick={closeMenu}>
-              Brain Games
+              Games
             </Link>
             <a href="#" onClick={closeMenu}>
               +
