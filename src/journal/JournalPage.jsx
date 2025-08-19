@@ -2,6 +2,8 @@ import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { useApi } from "../api/ApiContext";
 import Calendar from "react-calendar";
+import JournalEntryDisplay from "./JournalEntryDisplay";
+import EmojiPicker from 'emoji-picker-react'; // NEW: Import the emoji picker
 
 import "react-calendar/dist/Calendar.css";
 import "../styles/pages/journal.css";
@@ -31,11 +33,13 @@ export default function JournalPage() {
   const [formData, setFormData] = useState(BLANK_ENTRY);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [activeStartDate, setActiveStartDate] = useState(new Date());
-
-  // --- NEW: State for search and tag filtering ---
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTag, setSelectedTag] = useState(null);
   const [tagsVisible, setTagsVisible] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // NEW: State for the emoji picker visibility
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -54,7 +58,6 @@ export default function JournalPage() {
     getData();
   }, [token, request]);
 
-  // --- NEW: Memoized list of all unique tags ---
   const allUniqueTags = useMemo(() => {
     const tagsSet = new Set();
     entries.forEach((entry) => {
@@ -67,11 +70,8 @@ export default function JournalPage() {
     return Array.from(tagsSet).sort();
   }, [entries]);
 
-  // --- UPDATED: Filtering logic now includes search and tags ---
   const filteredEntries = useMemo(() => {
     let tempEntries = [...entries];
-
-    // Filter by selected tag first
     if (selectedTag) {
       tempEntries = tempEntries.filter(
         (entry) =>
@@ -82,8 +82,6 @@ export default function JournalPage() {
             .includes(selectedTag)
       );
     }
-
-    // Then, filter by search term (searches title and tags)
     if (searchTerm) {
       tempEntries = tempEntries.filter(
         (entry) =>
@@ -93,13 +91,10 @@ export default function JournalPage() {
             entry.tags.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
-
     return tempEntries;
   }, [entries, searchTerm, selectedTag]);
 
-  // --- This logic now uses the master 'filteredEntries' list ---
   const entriesForSelectedDate = useMemo(() => {
-    // If a search or tag filter is active, show results from all dates. Otherwise, filter by selected date.
     if (searchTerm || selectedTag) {
       return filteredEntries;
     }
@@ -110,7 +105,6 @@ export default function JournalPage() {
     );
   }, [entries, selectedDate, searchTerm, selectedTag, filteredEntries]);
 
-  // --- All other state management and handlers are unchanged ---
   const entryDateSet = useMemo(
     () =>
       new Set(entries.map((e) => toLocalYYYYMMDD(new Date(e.entry_timestamp)))),
@@ -123,12 +117,14 @@ export default function JournalPage() {
       ),
     [moods]
   );
+
   const selectedDayMood = useMemo(() => {
     const moodValue = moodDateMap.get(toLocalYYYYMMDD(selectedDate));
     return moodValue
       ? `${moodMap[moodValue].emoji} ${moodMap[moodValue].label}`
       : "No mood logged";
   }, [selectedDate, moodDateMap]);
+
   const monthMood = useMemo(() => {
     const month = activeStartDate.getMonth();
     const year = activeStartDate.getFullYear();
@@ -146,14 +142,7 @@ export default function JournalPage() {
     return `${moodMap[avgValue].emoji} ${moodMap[avgValue].label}`;
   }, [moods, activeStartDate]);
 
-  useEffect(() => {
-    if (entriesForSelectedDate.length > 0 && !selectedTag && !searchTerm) {
-      setSelectedEntry(entriesForSelectedDate[0]);
-    } else {
-      setSelectedEntry(null);
-    }
-  }, [entriesForSelectedDate, selectedTag, searchTerm]);
-
+  // UPDATED: Also hides the emoji picker when the selected entry changes
   useEffect(() => {
     if (selectedEntry) {
       setFormData({
@@ -161,22 +150,56 @@ export default function JournalPage() {
         content: selectedEntry.content || "",
         tags: selectedEntry.tags || "",
       });
+      setIsEditing(false);
     } else {
       setFormData(BLANK_ENTRY);
+      setIsEditing(true);
     }
+    setShowEmojiPicker(false); // Hide emoji picker when mode changes
   }, [selectedEntry]);
+
+  const hasUnsavedChanges = () => {
+    if (!selectedEntry) return false;
+    return (
+      formData.title !== selectedEntry.title ||
+      formData.content !== (selectedEntry.content || "") ||
+      formData.tags !== (selectedEntry.tags || "")
+    );
+  };
 
   const handleInputChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   const handleSelectEntry = (entry) => setSelectedEntry(entry);
-  const handleNewEntry = () => setSelectedEntry(null);
   const handleTagClick = (tag) => {
-    setSelectedTag((currentTag) => (currentTag === tag ? null : tag)); // Toggle selection
-    setSearchTerm(""); // Clear search when a tag is clicked
+    setSelectedTag((currentTag) => (currentTag === tag ? null : tag));
+    setSearchTerm("");
   };
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    setSelectedTag(null); // Clear tag when searching
+    setSelectedTag(null);
+  };
+  const handleNewEntry = () => setSelectedEntry(null);
+
+  const handleCancelEdit = () => {
+    if (
+      hasUnsavedChanges() &&
+      !window.confirm(
+        "You have unsaved changes. Are you sure you want to cancel?"
+      )
+    ) {
+      return;
+    }
+
+    if (selectedEntry) {
+      setFormData({
+        title: selectedEntry.title,
+        content: selectedEntry.content || "",
+        tags: selectedEntry.tags || "",
+      });
+      setIsEditing(false);
+    } else {
+      setFormData(BLANK_ENTRY);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -186,7 +209,6 @@ export default function JournalPage() {
       if (selectedEntry) {
         updatedEntry = await request(`/journal/${selectedEntry.id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
         setEntries(
@@ -199,7 +221,6 @@ export default function JournalPage() {
         };
         updatedEntry = await request("/journal", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newEntryData),
         });
         setEntries([updatedEntry, ...entries]);
@@ -209,8 +230,13 @@ export default function JournalPage() {
       console.error("Failed to save entry:", err);
     }
   };
+
   const handleDelete = async () => {
-    if (!selectedEntry || !window.confirm("Are you sure?")) return;
+    if (
+      !selectedEntry ||
+      !window.confirm("Are you sure you want to permanently delete this entry?")
+    )
+      return;
     try {
       await request(`/journal/${selectedEntry.id}`, { method: "DELETE" });
       setEntries(entries.filter((e) => e.id !== selectedEntry.id));
@@ -218,6 +244,14 @@ export default function JournalPage() {
     } catch (err) {
       console.error("Failed to delete entry:", err);
     }
+  };
+
+  // NEW: Handler for when an emoji is clicked in the picker
+  const onEmojiClick = (emojiObject) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      content: prevData.content + emojiObject.emoji,
+    }));
   };
 
   return (
@@ -250,7 +284,6 @@ export default function JournalPage() {
             <p>{monthMood}</p>
           </div>
         </div>
-        {/* --- Search and Filter Section --- */}
         <div className="search-filter-section">
           <input
             type="text"
@@ -289,60 +322,99 @@ export default function JournalPage() {
         </div>
       </aside>
 
-      {/* --- THIS MAIN SECTION IS NOW CORRECTLY FILLED IN --- */}
       <main className="journal-main">
-        {/* Column 1 (in main): The Form */}
         <div className="journal-form-section">
-          <button
-            onClick={handleNewEntry}
-            className="button-primary new-entry-button"
-          >
-            + New Entry
-          </button>
-          <form className="journal-form" onSubmit={handleSubmit}>
-            <h5 className="form-header">
-              {selectedEntry ? "Edit Entry" : "Create New Entry"}
-            </h5>
-            <input
-              type="text"
-              name="title"
-              placeholder="Entry Title"
-              value={formData.title}
-              onChange={handleInputChange}
-              required
-            />
-            <textarea
-              name="content"
-              placeholder="Start writing..."
-              value={formData.content}
-              onChange={handleInputChange}
-              required
-            ></textarea>
-            <input
-              type="text"
-              name="tags"
-              placeholder="Tags (e.g., work, personal, ideas)"
-              value={formData.tags}
-              onChange={handleInputChange}
-            />
-            <div className="form-buttons">
-              <button type="submit" className="button-primary">
-                {selectedEntry ? "Save Changes" : "Create Entry"}
-              </button>
-              {selectedEntry && (
+          {!isEditing && (
+            <button
+              onClick={handleNewEntry}
+              className="button-primary new-entry-button"
+            >
+              + New Entry
+            </button>
+          )}
+
+          {isEditing ? (
+            <form className="journal-form" onSubmit={handleSubmit}>
+              <h5 className="form-header">
+                {selectedEntry ? "Edit Entry" : "Create New Entry"}
+              </h5>
+              <input
+                type="text"
+                name="title"
+                placeholder="Entry Title"
+                value={formData.title}
+                onChange={handleInputChange}
+                required
+              />
+              {/* UPDATED: Textarea and emoji picker */}
+              <div className="textarea-wrapper">
+                <textarea
+                  name="content"
+                  placeholder="Start writing..."
+                  value={formData.content}
+                  onChange={handleInputChange}
+                  required
+                ></textarea>
+                {showEmojiPicker && (
+                  <div className="emoji-picker-container">
+                    <EmojiPicker onEmojiClick={onEmojiClick} height={350} width="100%" />
+                  </div>
+                )}
+              </div>
+              <input
+                type="text"
+                name="tags"
+                placeholder="Tags (e.g., work, personal, ideas)"
+                value={formData.tags}
+                onChange={handleInputChange}
+              />
+              <div className="form-buttons">
                 <button
                   type="button"
-                  className="button-danger"
-                  onClick={handleDelete}
+                  className="button-emoji"
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  title="Add Emoji"
                 >
-                  Delete
+                  😊
                 </button>
-              )}
+                <div className="main-form-buttons">
+                  <button type="submit" className="button-primary">
+                    {selectedEntry ? "Save Changes" : "Create Entry"}
+                  </button>
+                  {selectedEntry && (
+                    <button
+                      type="button"
+                      className="button-secondary"
+                      onClick={handleCancelEdit}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </div>
+            </form>
+          ) : (
+            <div className="journal-read-mode">
+              <JournalEntryDisplay entry={selectedEntry} />
+              <div className="form-buttons">
+                {selectedEntry && (
+                  <>
+                    <button
+                      className="button-primary"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      Edit
+                    </button>
+                    <button className="button-danger" onClick={handleDelete}>
+                      Delete
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-          </form>
+          )}
         </div>
 
-        {/* Column 2 (in main): The Entry List */}
         <div className="daily-entries-section">
           <h4>
             {searchTerm || selectedTag
