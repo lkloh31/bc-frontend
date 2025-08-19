@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import InfiniteScroll from "react-infinite-scroll-component";
 import NewsItems from "./NewsItems";
 import { FaSearch } from "react-icons/fa";
 import "../styles/pages/news.css";
@@ -19,66 +18,55 @@ export default function News() {
 
   const [search, setSearch] = useState("latest");
   const [inputValue, setInputValue] = useState("");
-  const [page, setPage] = useState(1);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [favorites, setFavorites] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
 
-  // Load favourites from localStorage on mount
+  // Load favorites from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem("favorites");
     if (saved) setFavorites(JSON.parse(saved));
   }, []);
 
-  // Store favourites whenever changed
+  // Store favorites whenever changed
   useEffect(() => {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   }, [favorites]);
 
-  // Fetch articles from backend
-  const fetchArticles = async (searchTerm, pageNum) => {
+  // Fetch up to 50 articles
+  const fetchArticles = async (searchTerm) => {
     setLoading(true);
     try {
       const res = await axios.get("http://localhost:3000/daily/news", {
-        params: { q: searchTerm, page: pageNum },
+        params: { q: searchTerm, pageSize: 50 }, // request up to 50
       });
 
-      const { articles: newArticles, totalResults } = res.data;
+      const { articles: newArticles } = res.data;
 
-      setArticles((prev) => {
-        const updated = pageNum === 1 ? newArticles : [...newArticles, ...prev];
-        setHasMore(updated.length < totalResults);
-        return updated;
-      });
+      setArticles(newArticles.slice(0, 50)); // ensure max 50
     } catch (error) {
       console.error("Fetch error:", error);
-      setHasMore(false);
+      setArticles([]);
     }
     setLoading(false);
   };
 
-  // Fetch when search/page/favourites changes
+  // Fetch whenever search changes
   useEffect(() => {
     if (search.toLowerCase() === "favorites") {
       setArticles(favorites);
-      setHasMore(false);
     } else {
-      fetchArticles(search, page);
+      fetchArticles(search);
     }
-  }, [search, page, favorites]);
+  }, [search, favorites]);
 
-  // Handle new search or category click - called when the user clicks a category or presses Enter in the search bar.
+  // Handle search or category click
   const searchNews = (term) => {
     const trimmed = term.trim();
-
-    setPage(1);
-    setHasMore(true);
 
     if (trimmed.toLowerCase() === "favorites") {
       setSearch("Favorites");
       setArticles(favorites);
-      setHasMore(false);
       setInputValue("");
     } else {
       setSearch(trimmed === "" ? "latest" : trimmed);
@@ -86,14 +74,7 @@ export default function News() {
     }
   };
 
-  // Load next page - Infinite scroll pagination trigger
-  const fetchMoreData = () => {
-    if (hasMore && !loading) {
-      setPage((prev) => prev + 1);
-    }
-  };
-
-  // Toggle favourite status
+  // Toggle favorite status
   const toggleFavorite = (article) => {
     const exists = favorites.some((fav) => fav.url === article.url);
     const updated = exists
@@ -149,23 +130,15 @@ export default function News() {
         </div>
       </div>
 
-      {/* Articles with infinite scroll */}
+      {/* Articles */}
       <div className="articles-wrapper w-[1200px] mx-auto">
-        <InfiniteScroll
-          dataLength={articles.length}
-          next={fetchMoreData}
-          hasMore={search.toLowerCase() !== "favourites" && hasMore}
-          // loader={<h4>Loading...</h4>}
-          scrollThreshold={0.9}
-        >
-          <div className="grid grid-cols-3 gap-5 mt-[40px]">
-            <NewsItems
-              articles={articles}
-              toggleFavorite={toggleFavorite}
-              favorites={favorites}
-            />
-          </div>
-        </InfiniteScroll>
+        <div className="grid grid-cols-3 gap-5 mt-[40px]">
+          <NewsItems
+            articles={articles}
+            toggleFavorite={toggleFavorite}
+            favorites={favorites}
+          />
+        </div>
 
         {!loading && articles.length === 0 && (
           <div className="min-h-[calc(100vh-200px)] flex justify-center pt-10">
