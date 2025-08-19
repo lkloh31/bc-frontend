@@ -15,11 +15,14 @@ const toLocalYYYYMMDD = (date) => {
 const BLANK_ENTRY = { title: "", content: "", tags: "" };
 
 const moodMap = {
-  1: { label: "Sad", emoji: "😔" },
-  2: { label: "Neutral", emoji: "😐" },
-  3: { label: "Happy", emoji: "😊" },
-  4: { label: "Great", emoji: "😄" },
-  5: { label: "Awesome", emoji: "😍" },
+  1: { label: "Sad", emoji: "😢" },
+  2: { label: "Frustrated", emoji: "😤" },
+  3: { label: "Tired", emoji: "😴" },
+  4: { label: "Neutral", emoji: "😐" },
+  5: { label: "Calm", emoji: "😌" },
+  6: { label: "Happy", emoji: "😊" },
+  7: { label: "Loved", emoji: "😍" },
+  8: { label: "Thrilled", emoji: "🤩" },
 };
 
 export default function JournalPage() {
