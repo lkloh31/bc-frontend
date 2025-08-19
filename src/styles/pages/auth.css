@@ -27,6 +27,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: relative; /* For password toggle positioning */
 }
 
 .form-group label {
@@ -42,6 +43,7 @@
   font-size: 1rem;
   background-color: white;
   color: black;
+  width: 100%;
 }
 
 .form-group input:focus {
@@ -85,4 +87,25 @@
 
 .auth-link a:hover {
   text-decoration: underline;
+}
+
+/* Toggle Password Button */
+.auth-form .toggle-password-btn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background-color: #f0f0f0; /* light gray */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 4px 8px;
+  height: 32px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: black; /* make text visible */
+  transition: background-color 0.2s ease;
+}
+
+.auth-form .toggle-password-btn:hover {
+  background-color: #e0e0e0;
 }
