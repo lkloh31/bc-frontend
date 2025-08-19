@@ -130,6 +130,10 @@
 
 /* Medium screens (tablet) */
 @media (max-width: 768px) {
+  .main-content {
+    padding-bottom: 200px; /* leave room for Spotify, increase if needed */
+  }
+
   .homepage-mood-section .mood-tracker .mood-options {
     grid-template-columns: repeat(3, 1fr); /* 3 columns */
     gap: 1.25rem;
@@ -140,12 +144,16 @@
   }
   .spotify-player {
     order: 3;
-    margin-top: 3rem; /* add spacing so it doesn’t crowd */
+    margin-top: 1rem; /* add spacing so it doesn’t crowd */
   }
 }
 
 /* Small screens (mobile) */
 @media (max-width: 480px) {
+  .main-content {
+    padding-bottom: 200px; /* leave room for Spotify, increase if needed */
+  }
+
   .homepage-mood-section .mood-tracker .mood-options {
     grid-template-columns: repeat(2, 1fr); /* 2 columns */
     gap: 1rem;
@@ -164,13 +172,13 @@
     order: 2;
     position: relative;
     z-index: 2;
-    margin-bottom: 2rem; /* ensure space BELOW the text */
+    margin-bottom: 1rem; /* ensure space BELOW the text */
   }
 
   .spotify-player {
     order: 3;
-    margin-top: 2rem; /* double safety */
     position: relative;
     z-index: 1;
+    margin-top: 1rem; /* double safety */
   }
 }
