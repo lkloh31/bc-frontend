@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
 import { AuthProvider } from "./auth/AuthContext";
 import { ApiProvider } from "./api/ApiContext";
 import { PlayerProvider } from "./components/music/PlayerContext";
