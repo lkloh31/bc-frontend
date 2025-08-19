@@ -1,0 +1,101 @@
+/* ===== Weather page: fixed header under navbar ===== */
+:root { --nav-h: 0px; }
+
+.wx {
+  --wx-header-h: 64px;   /* header height (make it 56–72px if you want) */
+  --wx-z: 1100;          /* stack under navbar */
+}
+
+/* ensure navbar is above the weather header */
+.navbar { z-index: 1200; background: #fff; }
+
+/* fixed, full-width header positioned by the measured navbar height */
+.wx__header {
+  position: fixed;
+  top: var(--nav-h);
+  left: 0;
+  right: 0;
+  height: var(--wx-header-h);
+  z-index: var(--wx-z);
+  overflow: visible;
+
+  background: #000;
+  color: #e6ecf1;
+  border-bottom: 1px solid #222;
+
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 520px);
+  align-items: center;
+  gap: 24px;
+  padding: 0 clamp(16px, 4vw, 48px);
+}
+
+/* reserve space so content starts below the fixed header */
+.wx__spacer { height: var(--wx-header-h); }
+
+/* only the widget/content scrolls */
+.wx__content { padding: 24px clamp(16px, 4vw, 48px) 80px; }
+
+/* search tweaks (keep as you like) */
+.wx__search { 
+  position: relative; 
+  display: flex;
+  width: 100%;
+  max-width: 520px;
+ }
+
+ .wx__search-list {
+  position: absolute;
+  top: calc(100% + 8px);             /* sit just below the input */
+  left: 0;
+  right: 0;                          /* same width as the input */
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  max-height: 320px;
+  overflow: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,.1);
+
+  z-index: 1300;                     /* above fixed header & widget */
+}
+.wx__search-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wx__search-item:hover { background: #f6f7f9; }
+.wx__search-name { font-weight: 600; color: #111; overflow: hidden; text-overflow: ellipsis; }
+.wx__search-meta { color: #666; flex: 0 0 auto; }
+
+.wx__search-input {
+  height: 40px;
+  flex: 1;
+  padding: 0 40px 0 14px;
+  font-size: 18px;
+  border-radius: 8px;
+  border: 2px solid #000;
+  background: #fff;
+  color: #111;
+  font-family: "Courier New", Courier, monospace;
+}
+.wx__search-btn {
+  position: absolute; right: 8px; top: 50%;
+  transform: translateY(-50%); border: 0; background: transparent; cursor: pointer;
+}
+.wx__actions { display: flex; align-items: center; gap: 8px; }
+.wx__save-btn{
+  height: 40px; padding: 0 12px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(0,0,0,.30); color: #fff; backdrop-filter: blur(6px);
+}
+.wx__save-btn:hover{ background: rgba(0,0,0,.4); }

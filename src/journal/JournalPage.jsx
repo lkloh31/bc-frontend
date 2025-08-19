@@ -3,7 +3,7 @@ import { useAuth } from "../auth/AuthContext";
 import { useApi } from "../api/ApiContext";
 import Calendar from "react-calendar";
 import JournalEntryDisplay from "./JournalEntryDisplay";
-import EmojiPicker from 'emoji-picker-react'; // NEW: Import the emoji picker
+import EmojiPicker from "emoji-picker-react";
 
 import "react-calendar/dist/Calendar.css";
 import "../styles/pages/journal.css";
@@ -16,12 +16,16 @@ const toLocalYYYYMMDD = (date) => {
 };
 const BLANK_ENTRY = { title: "", content: "", tags: "" };
 
+// This moodMap now correctly reflects the 8 moods
 const moodMap = {
-  1: { label: "Sad", emoji: "😔" },
-  2: { label: "Neutral", emoji: "😐" },
-  3: { label: "Happy", emoji: "😊" },
-  4: { label: "Great", emoji: "😄" },
-  5: { label: "Awesome", emoji: "😍" },
+  1: { label: "Sad", emoji: "😢" },
+  2: { label: "Frustrated", emoji: "😤" },
+  3: { label: "Tired", emoji: "😴" },
+  4: { label: "Neutral", emoji: "😐" },
+  5: { label: "Calm", emoji: "😌" },
+  6: { label: "Happy", emoji: "😊" },
+  7: { label: "Loved", emoji: "😍" },
+  8: { label: "Thrilled", emoji: "🤩" },
 };
 
 export default function JournalPage() {
@@ -37,8 +41,6 @@ export default function JournalPage() {
   const [selectedTag, setSelectedTag] = useState(null);
   const [tagsVisible, setTagsVisible] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-
-  // NEW: State for the emoji picker visibility
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   useEffect(() => {
@@ -125,24 +127,32 @@ export default function JournalPage() {
       : "No mood logged";
   }, [selectedDate, moodDateMap]);
 
-  const monthMood = useMemo(() => {
+  // NEW: Replaced the 'monthMood' average with a percentage breakdown
+  const monthMoodStats = useMemo(() => {
     const month = activeStartDate.getMonth();
     const year = activeStartDate.getFullYear();
     const moodsForMonth = moods.filter((m) => {
       const moodDate = new Date(m.mood_date);
       return moodDate.getMonth() === month && moodDate.getFullYear() === year;
     });
-    if (moodsForMonth.length === 0) return "Not logged yet.";
-    const total = moodsForMonth.reduce(
-      (sum, mood) => sum + Number(mood.mood_value),
-      0
-    );
-    const avgValue = Math.round(total / moodsForMonth.length);
-    if (avgValue < 1 || avgValue > 5 || !moodMap[avgValue]) return "N/A";
-    return `${moodMap[avgValue].emoji} ${moodMap[avgValue].label}`;
+
+    if (moodsForMonth.length === 0) return [];
+
+    const counts = moodsForMonth.reduce((acc, mood) => {
+      acc[mood.mood_value] = (acc[mood.mood_value] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.entries(counts)
+      .map(([moodValue, count]) => ({
+        ...moodMap[moodValue],
+        count,
+        percentage: Math.round((count / moodsForMonth.length) * 100),
+      }))
+      .sort((a, b) => b.count - a.count); // Sort by most frequent
   }, [moods, activeStartDate]);
 
-  // UPDATED: Also hides the emoji picker when the selected entry changes
+
   useEffect(() => {
     if (selectedEntry) {
       setFormData({
@@ -155,7 +165,7 @@ export default function JournalPage() {
       setFormData(BLANK_ENTRY);
       setIsEditing(true);
     }
-    setShowEmojiPicker(false); // Hide emoji picker when mode changes
+    setShowEmojiPicker(false);
   }, [selectedEntry]);
 
   const hasUnsavedChanges = () => {
@@ -246,7 +256,6 @@ export default function JournalPage() {
     }
   };
 
-  // NEW: Handler for when an emoji is clicked in the picker
   const onEmojiClick = (emojiObject) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -279,9 +288,21 @@ export default function JournalPage() {
             <h4>Selected Day's Mood:</h4>
             <p>{selectedDayMood}</p>
           </div>
+          {/* UPDATED: The monthly summary now displays the breakdown */}
           <div className="monthly-mood">
-            <h4>This Month's Average Mood:</h4>
-            <p>{monthMood}</p>
+            <h4>This Month's Moods:</h4>
+            <div className="mood-stats-list">
+              {monthMoodStats.length > 0 ? (
+                monthMoodStats.map((mood) => (
+                  <div key={mood.label} className="mood-stat-item">
+                    <span>{mood.emoji} {mood.label}</span>
+                    <span className="mood-percentage">{mood.percentage}%</span>
+                  </div>
+                ))
+              ) : (
+                <p className="no-moods-logged">No moods logged this month.</p>
+              )}
+            </div>
           </div>
         </div>
         <div className="search-filter-section">
@@ -346,7 +367,6 @@ export default function JournalPage() {
                 onChange={handleInputChange}
                 required
               />
-              {/* UPDATED: Textarea and emoji picker */}
               <div className="textarea-wrapper">
                 <textarea
                   name="content"
@@ -357,7 +377,12 @@ export default function JournalPage() {
                 ></textarea>
                 {showEmojiPicker && (
                   <div className="emoji-picker-container">
-                    <EmojiPicker onEmojiClick={onEmojiClick} height={350} width="100%" />
+                    <EmojiPicker
+                      onEmojiClick={onEmojiClick}
+                      height={350}
+                      width="100%"
+                      previewConfig={{ showPreview: false }}
+                    />
                   </div>
                 )}
               </div>

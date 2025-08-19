@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
@@ -9,6 +9,24 @@ export default function Navbar() {
   const { token, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const navbar = document.querySelector(".navbar");
+
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        navbar?.classList.add("scrolled");
+      } else {
+        navbar?.classList.remove("scrolled");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -25,7 +43,7 @@ export default function Navbar() {
       </Link>
 
       <button
-        className="menubutton"
+        className={`menubutton ${menuOpen ? "open" : ""}`}
         onClick={() => setMenuOpen((prev) => !prev)}
         aria-label="Toggle Menu"
       >
@@ -62,6 +80,7 @@ export default function Navbar() {
           </>
         ) : (
           <>
+            {/* <Link to="/daily">Daily dose</Link> */}
             <Link to="/register" onClick={closeMenu}>
               Register
             </Link>

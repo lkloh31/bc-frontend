@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "../auth/AuthContext";
+import MoodOfTheDay from "../components/MoodOfTheDay";
 
 import "../styles/pages/homepage.css";
 import "../styles/components/button.css";
@@ -32,6 +33,16 @@ export default function Homepage() {
             <h4>Welcome back! You're logged in.</h4>
             <p>Start curating your content and experiences.</p>
           </div>
+        )}
+      </div>
+
+      <div className="homepage-mood-section">
+        <MoodOfTheDay />
+
+        {!token && (
+          <p className="login-prompt">
+            Log in to save your mood and keep track of your emotional state.
+          </p>
         )}
       </div>
     </div>

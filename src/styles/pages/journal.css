@@ -374,6 +374,33 @@
   background-color: #f0f0f0;
 }
 
-.emoji-picker-container .EmojiPickerReact .epr-search-container input.epr-search {
-  padding-left: 35px !important;
+/* Add these new styles to journal.css */
+
+.monthly-mood .no-moods-logged {
+  font-style: italic;
+  color: #888;
+  font-size: 14px;
+}
+
+.mood-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+  margin-top: 0.5rem;
+  font-size: 14px;
+}
+
+.mood-stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mood-percentage {
+  font-weight: bold;
+  background-color: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
 }
