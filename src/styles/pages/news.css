@@ -1,3 +1,4 @@
+/* Base / Desktop layout (1200px+) */
 .news-container {
   font-family: "Courier New", Courier, monospace;
 }
@@ -8,15 +9,164 @@
   z-index: 200;
 }
 
+.news-container nav input {
+  width: 300px;
+  height: 30px;
+  padding: 5px 8px;
+}
+
 .news-categories {
   position: sticky;
-  top: 100px; /* main navbar height + news navbar height */
-  height: 60px;
+  top: 160px; /* main navbar height + news navbar height */
   z-index: 150;
-  padding: 10px 0; /* adds 10px space on top and bottom */
+  padding: 10px 0;
+}
+
+.news-categories .category-wrapper {
+  display: flex;
+  flex-wrap: nowrap; /* default desktop: single row */
+  justify-content: center;
+  align-items: center;
+}
+
+.news-categories .category {
+  display: inline-block;
+  margin: 0 20px;
+  padding: 8px 14px; /* bigger button size */
+  font-size: 16px; /* bigger text */
+  cursor: pointer;
+  border-radius: 8px; /* slightly larger rounding */
 }
 
 .articles-wrapper {
-  height: calc(100vh - 290px);
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  height: calc(
+    100vh - 290px
+  ); /* Desktop: 100 main + 60 search + 60 categories + padding */
   overflow-y: auto;
+}
+
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* ============================= */
+/* Responsive adjustments */
+/* ============================= */
+
+/* iPad Mini portrait (~768px wide, ~1024px tall) */
+@media (min-width: 600px) and (max-width: 768px) {
+  .articles-wrapper {
+    height: calc(100vh - 240px); /* 100 main + 70 search + 70 categories */
+    overflow-y: auto;
+  }
+}
+
+/* Medium screens (tablet) and iPhone XR */
+@media (max-width: 768px) {
+  .news-container nav input {
+    width: 200px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .news-categories {
+    top: 130px;
+    padding: 5px 0;
+  }
+
+  .news-categories .category {
+    margin: 0 10px;
+    padding: 4px 8px;
+    font-size: 14px;
+  }
+
+  .articles-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  .articles-wrapper {
+    height: calc(100vh - 200px); /* 100 main + 50 search + 50 categories */
+    padding: 15px;
+    overflow-y: auto;
+  }
+}
+
+/* Small screens (mobile) */
+@media (max-width: 480px) {
+  .news-container nav {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px;
+    position: sticky;
+    top: 60px; /* closer to main navbar */
+    z-index: 200;
+  }
+
+  .news-container nav input {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .news-categories {
+    top: 120px; /* below the search nav */
+    padding: 5px;
+    text-align: center;
+  }
+
+  /* Wrap categories into multiple rows */
+  .news-categories .category-wrapper {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .news-categories .category {
+    flex: 1 1 30%; /* ~3 per row */
+    margin: 5px 2px;
+    padding: 6px;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .articles-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .articles-wrapper {
+    padding: 10px;
+    /* Height handled in extra-small rules */
+  }
+}
+
+/* Extra-small screens (iPhone SE, etc. ≤375px) */
+@media (max-width: 375px) {
+  .news-container nav input {
+    font-size: 13px;
+    height: 26px;
+  }
+
+  .news-categories .category {
+    flex: 1 1 33%; /* exactly 3 per row */
+    font-size: 11px;
+    margin: 4px 2px;
+  }
+
+  .articles-wrapper {
+    height: calc(100vh - 230px); /* 100 main + 60 search + 70 categories */
+    overflow-y: auto;
+  }
+}
+
+/* iPhone XR/XE (~414px) */
+@media (max-width: 414px) {
+  .news-categories .category {
+    flex: 1 1 32%; /* ~3 per row, slightly wider */
+  }
 }
