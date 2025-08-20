@@ -11,7 +11,7 @@ import DailyDose from "./components/DailyDose";
 import News from "./components/News";
 import UserWeather from "./components/weather/UserWeather";
 import Exchange from "./components/Exchange";
-// import Stocks from "./components/Stocks";
+import Stocks from "./components/Stocks";
 import Crypto from "./components/Crypto.jsx";
 import MapPage from "./map/MapPage";
 import BrainGames from "./pages/BrainGames.jsx";
@@ -36,7 +36,7 @@ export default function App() {
                   <Route path="/daily/news" element={<News />} />
                   <Route path="/daily/weather" element={<UserWeather />} />
                   <Route path="/daily/exchange" element={<Exchange />} />
-                  {/* <Route path="/daily/stocks" element={<Stocks />} /> */}
+                  <Route path="/daily/stocks" element={<Stocks />} />
                   <Route path="/daily/crypto" element={<Crypto />} />
                   <Route path="/daily/mood" element={<MoodOfTheDay />} />
                   <Route path="/map" element={<MapPage />} />
