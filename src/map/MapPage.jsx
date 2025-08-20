@@ -8,7 +8,13 @@ import { useMapbox } from "./hooks/useMapbox";
 import { useMapPins } from "./hooks/useMapPins";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import "../styles/pages/map.css";
+import "../styles/pages/map/map-forms.css";
+import "../styles/pages/map/map-layout.css";
+import "../styles/pages/map/map-markers.css";
+import "../styles/pages/map/map-popups.css";
+import "../styles/pages/map/map-search-bar.css";
+import "../styles/pages/map/map-sidebar.css";
+
 import "../styles/components/button.css";
 
 export default function MapPage() {
