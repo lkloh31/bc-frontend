@@ -4,7 +4,6 @@ export default function LocationList({
   pins,
   type,
   onLocationClick,
-  onDeleteLocation,
   locationTypes = [],
 }) {
   return (
@@ -15,7 +14,6 @@ export default function LocationList({
           pin={pin}
           type={type}
           onClick={() => onLocationClick(pin.longitude, pin.latitude)}
-          onDelete={onDeleteLocation}
           locationTypes={locationTypes}
         />
       ))}
