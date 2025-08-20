@@ -35,19 +35,23 @@ export default function News() {
 
   // Fetch up to 50 articles
   const fetchArticles = async (searchTerm) => {
-    setLoading(true);
+    setLoading(true); // trigger loading state first
+
+    // let React render the loading state
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
     try {
       const res = await axios.get("http://localhost:3000/daily/news", {
-        params: { q: searchTerm, pageSize: 50 }, // request up to 50
+        params: { q: searchTerm, pageSize: 50 },
       });
 
       const { articles: newArticles } = res.data;
-
-      setArticles(newArticles.slice(0, 50)); // ensure max 50
+      setArticles(newArticles.slice(0, 50));
     } catch (error) {
       console.error("Fetch error:", error);
       setArticles([]);
     }
+
     setLoading(false);
   };
 
@@ -132,17 +136,21 @@ export default function News() {
 
       {/* Articles */}
       <div className="articles-wrapper w-[1200px] mx-auto">
-        <div className="grid grid-cols-3 gap-5 mt-[40px]">
-          <NewsItems
-            articles={articles}
-            toggleFavorite={toggleFavorite}
-            favorites={favorites}
-          />
-        </div>
-
-        {!loading && articles.length === 0 && (
-          <div className="empty-state">
-            <p className="text-center text-gray-500">No articles found</p>
+        {loading ? (
+          <div className="loading-state text-center text-gray-500 mt-10">
+            <p>Loading News...</p>
+          </div>
+        ) : articles.length === 0 ? (
+          <div className="empty-state text-center text-gray-500 mt-10">
+            <p>No articles found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-5 mt-[40px]">
+            <NewsItems
+              articles={articles}
+              toggleFavorite={toggleFavorite}
+              favorites={favorites}
+            />
           </div>
         )}
       </div>
