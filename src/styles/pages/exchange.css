@@ -12,7 +12,8 @@
   justify-content: flex-start;
   align-items: center;
   text-align: center;
-  min-height: 30vh;
+  min-height: 15vh;
+  margin: 60px auto;
 }
 
 .converter h1 {
@@ -42,6 +43,10 @@ select {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.favourites-table {
+  margin: 100px auto;
 }
 
 .exchange-title {
@@ -125,7 +130,7 @@ select {
   }
 
   select {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   .equals {
@@ -142,8 +147,30 @@ select {
     padding: 6px 10px;
   }
 
+  .exchange-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .last-updated {
+    font-size: 12px;
+  }
+
   .exchange-table {
-    min-width: 400px; /* allow horizontal scroll */
+    width: 100%;
+    font-size: 11px;
+    min-width: auto;
+  }
+
+  .exchange-table th,
+  .exchange-table td {
+    padding: 4px 6px;
+  }
+
+  /* Hide Name column */
+  .exchange-table th.name-column,
+  .exchange-table td.name-column {
+    display: none;
   }
 }
 
@@ -167,12 +194,7 @@ select {
     gap: 0.5rem;
   }
 
-  .converter-input {
-    width: 100%;
-    max-width: 150px;
-    margin: 0 auto;
-  }
-
+  .converter-input,
   select {
     width: 100%;
     max-width: 150px;
@@ -197,15 +219,12 @@ select {
   }
 
   .exchange-table {
-    min-width: 100%;
-    margin: 0 auto;
+    font-size: 11px;
   }
 
-  .filter-input {
-    display: block;
-    text-align: center;
-    width: 100%;
-    margin-bottom: 0.5rem; /* optional spacing */
+  .exchange-table th.name-column,
+  .exchange-table td.name-column {
+    display: none;
   }
 }
 
@@ -253,7 +272,11 @@ select {
   }
 
   .exchange-table {
-    min-width: 100%;
-    margin: 0 auto;
+    font-size: 10px;
+  }
+
+  .exchange-table th.name-column,
+  .exchange-table td.name-column {
+    display: none;
   }
 }

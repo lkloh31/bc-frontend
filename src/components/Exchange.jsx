@@ -13,6 +13,15 @@ export default function Exchange() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Track mobile screen
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 480);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 480);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Filter state
   const [filter, setFilter] = useState(
     () => localStorage.getItem("currencyFilter") || ""
@@ -50,7 +59,6 @@ export default function Exchange() {
 
         setRates(ratesData);
 
-        // Map codes to include names
         const options = Array.from(
           new Set(
             ratesData
@@ -64,7 +72,6 @@ export default function Exchange() {
 
         setCurrencyOptions(options);
 
-        // Default selections
         setFromCurrency(ratesData[0]?.base_currency || "USD");
         setToCurrency(ratesData[0]?.currency_code || "EUR");
       } catch (err) {
@@ -115,6 +122,13 @@ export default function Exchange() {
     return found ? found.name : code;
   };
 
+  // Latest update time
+  const lastUpdated = rates.length
+    ? new Date(
+        Math.max(...rates.map((r) => new Date(r.last_updated)))
+      ).toLocaleString()
+    : "";
+
   return (
     <div className="exchange-container">
       {/* Converter */}
@@ -128,6 +142,7 @@ export default function Exchange() {
             onChange={(e) => setAmount(Number(e.target.value))}
           />
           <select
+            className="currency-name"
             value={fromCurrency}
             onChange={(e) => setFromCurrency(e.target.value)}
           >
@@ -161,16 +176,16 @@ export default function Exchange() {
 
       {/* Favourites Table */}
       {favourites.length > 0 && (
-        <>
+        <div className="favourites-table">
           <h2 className="exchange-title">⭐ Favorite Currencies</h2>
+          <p className="last-updated">Last updated on {lastUpdated}</p>
           <table className="exchange-table">
             <thead>
               <tr>
                 <th>Currency</th>
-                <th>Name</th>
+                {!isMobile && <th>Name</th>}
                 <th>Rate</th>
                 <th>Base</th>
-                <th>Last Updated</th>
                 <th></th>
               </tr>
             </thead>
@@ -180,10 +195,11 @@ export default function Exchange() {
                 .map((rate) => (
                   <tr key={rate.currency_code}>
                     <td>{rate.currency_code}</td>
-                    <td>{getCurrencyName(rate.currency_code)}</td>
+                    {!isMobile && (
+                      <td>{getCurrencyName(rate.currency_code)}</td>
+                    )}
                     <td>{rate.exchange_rate}</td>
                     <td>{rate.base_currency}</td>
-                    <td>{new Date(rate.last_updated).toLocaleString()}</td>
                     <td>
                       <button
                         onClick={() => removeFavourite(rate.currency_code)}
@@ -195,7 +211,7 @@ export default function Exchange() {
                 ))}
             </tbody>
           </table>
-        </>
+        </div>
       )}
 
       {/* Main Table */}
@@ -207,16 +223,16 @@ export default function Exchange() {
         onChange={(e) => setFilter(e.target.value)}
         className="filter-input"
       />
+      <p className="last-updated">Last updated on {lastUpdated}</p>
 
       <div className="exchange-table-wrapper">
         <table className="exchange-table">
           <thead>
             <tr>
               <th>Currency</th>
-              <th>Name</th>
+              {!isMobile && <th>Name</th>}
               <th>Rate</th>
               <th>Base</th>
-              <th>Last Updated</th>
               <th></th>
             </tr>
           </thead>
@@ -227,29 +243,34 @@ export default function Exchange() {
                 const query = filter.toLowerCase();
                 return (
                   r.currency_code.toLowerCase().includes(query) ||
-                  name.toLowerCase().includes(query) ||
+                  (!isMobile && name.toLowerCase().includes(query)) ||
                   r.base_currency.toLowerCase().includes(query)
                 );
               })
-              .map((rate) => (
-                <tr key={rate.currency_code}>
-                  <td>{rate.currency_code}</td>
-                  <td>{getCurrencyName(rate.currency_code)}</td>
-                  <td>{rate.exchange_rate}</td>
-                  <td>{rate.base_currency}</td>
-                  <td>{new Date(rate.last_updated).toLocaleString()}</td>
-                  <td>
-                    <button
-                      onClick={() => {
-                        addFavourite(rate.currency_code);
-                        setFilter(""); // clear filter when favoriting
-                      }}
-                    >
-                      ⭐ Favorite
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              .map((rate) => {
+                const isFavourite = favourites.includes(rate.currency_code);
+                return (
+                  <tr key={rate.currency_code}>
+                    <td>{rate.currency_code}</td>
+                    {!isMobile && (
+                      <td>{getCurrencyName(rate.currency_code)}</td>
+                    )}
+                    <td>{rate.exchange_rate}</td>
+                    <td>{rate.base_currency}</td>
+                    <td>
+                      <button
+                        onClick={() =>
+                          isFavourite
+                            ? removeFavourite(rate.currency_code)
+                            : addFavourite(rate.currency_code)
+                        }
+                      >
+                        {isFavourite ? "⭐ Remove" : "⭐ Favorite"}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>
