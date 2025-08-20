@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import StarRating from "./StarRating";
 
 export default function AddPinModal({
@@ -6,15 +6,30 @@ export default function AddPinModal({
   onSubmit,
   isLoading,
   locationTypes = [],
+  selectedLocation = null,
+  searchData = null,
 }) {
   const [formData, setFormData] = useState({
     name: "",
+    address: "",
     notes: "",
     rating: "",
     locationType: "been_there",
   });
   const [hoveredRating, setHoveredRating] = useState(0);
 
+  // Prefill form if searchData exists/changes
+  useEffect(() => {
+    if (searchData) {
+      setFormData((prev) => ({
+        ...prev,
+        name: searchData.name || searchData.fullName || "",
+        address: searchData.address || "",
+      }));
+    }
+  }, [searchData]);
+
+  // List all location_type
   const allLocationTypes = useMemo(
     () => [
       { value: "been_there", label: "Been There" },
@@ -32,9 +47,11 @@ export default function AddPinModal({
     [locationTypes]
   );
 
+  // Reset add pin form
   const resetForm = () => {
     setFormData({
       name: "",
+      address: "",
       notes: "",
       rating: "",
       locationType: "been_there",
@@ -42,6 +59,7 @@ export default function AddPinModal({
     setHoveredRating(0);
   };
 
+  // Process form submission and then reset form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -52,17 +70,20 @@ export default function AddPinModal({
     }
   };
 
+  // Close form modal and reset form
   const handleClose = () => {
     resetForm();
     onClose();
   };
 
+  // Close form modal on ESC
   const handleKeyDown = (e) => {
     if (e.key === "Escape") {
       handleClose();
     }
   };
 
+  // Set form data
   const updateFormData = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -90,6 +111,19 @@ export default function AddPinModal({
               onKeyDown={handleKeyDown}
               required
               placeholder="Location name"
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="location-address">Address</label>
+            <input
+              id="location-address"
+              type="text"
+              value={formData.address}
+              onChange={(e) => updateFormData("address", e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Address (optional)"
               disabled={isLoading}
             />
           </div>
