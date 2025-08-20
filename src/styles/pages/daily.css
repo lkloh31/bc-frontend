@@ -109,3 +109,31 @@
     padding: 0.4rem 0.8rem;
   }
 }
+
+/* Extra-small screens (iPhone SE, etc.) */
+@media (max-width: 375px) {
+  .daily-dose {
+    padding: 0.8rem;
+  }
+
+  .daily-dose h1 {
+    font-size: 1.3rem;
+  }
+
+  .daily-dose h2 {
+    font-size: 0.9rem;
+  }
+
+  .daily-dose h3 {
+    font-size: 0.75rem;
+  }
+
+  .daily-dose-links {
+    gap: 6px;
+  }
+
+  .daily-dose-links a {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+  }
+}
