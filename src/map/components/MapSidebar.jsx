@@ -6,8 +6,10 @@ export default function MapSidebar({
   collapsed,
   onToggleCollapse,
   onLocationClick,
+  onDeleteLocation,
   locationTypes = [],
   onAddLocationType,
+  onDeleteLocationType,
 }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTypeName, setNewTypeName] = useState("");
@@ -68,6 +70,37 @@ export default function MapSidebar({
     }
   };
 
+  const handleDeletePin = async (pinId) => {
+    try {
+      await onDeleteLocation(pinId);
+    } catch (error) {
+      console.error("Failed to delete pin:", error);
+      alert("Failed to delete location. Please try again.");
+    }
+  };
+
+  const handleDeleteLocationType = async (locationType) => {
+    const typePins = categorizedPins.custom[locationType] || [];
+
+    if (typePins.length > 0) {
+      const confirmMessage = `This category has ${typePins.length} location(s). Deleting it will also delete all locations in this category. Are you sure?`;
+      if (!window.confirm(confirmMessage)) {
+        return;
+      }
+    } else {
+      if (!window.confirm("Are you sure you want to delete this category?")) {
+        return;
+      }
+    }
+
+    try {
+      await onDeleteLocationType(locationType);
+    } catch (error) {
+      console.error("Failed to delete location type:", error);
+      alert("Failed to delete category. Please try again.");
+    }
+  };
+
   return (
     <div className={`map-sidebar ${collapsed ? "collapsed" : ""}`}>
       <div className="sidebar-header">
@@ -91,6 +124,7 @@ export default function MapSidebar({
             pins={categorizedPins.been_there}
             type="been_there"
             onLocationClick={onLocationClick}
+            onDeleteLocation={handleDeletePin}
             locationTypes={locationTypes}
           />
         </div>
@@ -103,11 +137,11 @@ export default function MapSidebar({
             pins={categorizedPins.want_to_go}
             type="want_to_go"
             onLocationClick={onLocationClick}
+            onDeleteLocation={handleDeletePin}
             locationTypes={locationTypes}
           />
         </div>
 
-        {/* Custom location types */}
         {customTypes.map((locationType) => {
           const typePins = categorizedPins.custom[locationType] || [];
           const displayName = locationType
@@ -117,20 +151,30 @@ export default function MapSidebar({
 
           return (
             <div key={locationType} className="map-section custom-section">
-              <div className="section-title">
-                {displayName} ({typePins.length})
+              <div className="section-header">
+                <div className="section-title">
+                  {displayName} ({typePins.length})
+                </div>
+                <button
+                  className="delete-type-btn"
+                  onClick={() => handleDeleteLocationType(locationType)}
+                  aria-label={`Delete ${displayName} category`}
+                  title={`Delete ${displayName} category`}
+                >
+                  ×
+                </button>
               </div>
               <LocationList
                 pins={typePins}
                 type={locationType}
                 onLocationClick={onLocationClick}
+                onDeleteLocation={handleDeletePin}
                 locationTypes={locationTypes}
               />
             </div>
           );
         })}
 
-        {/* Add new location type section */}
         <div className="map-section add-type-section">
           {!showAddForm ? (
             <button
