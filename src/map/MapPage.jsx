@@ -234,6 +234,7 @@ export default function MapPage() {
 
       <MapSidebar
         pins={pins}
+        pinsLoading={pinsLoading}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         onLocationClick={flyToLocation}

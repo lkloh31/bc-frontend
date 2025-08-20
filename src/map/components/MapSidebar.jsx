@@ -3,6 +3,7 @@ import LocationList from "./LocationList";
 
 export default function MapSidebar({
   pins = [],
+  pinsLoading = false,
   collapsed,
   onToggleCollapse,
   onLocationClick,
@@ -15,6 +16,15 @@ export default function MapSidebar({
   const [newTypeName, setNewTypeName] = useState("");
 
   const categorizedPins = useMemo(() => {
+    // Don't categorize if still loading
+    if (pinsLoading || !pins) {
+      return {
+        been_there: [],
+        want_to_go: [],
+        custom: {},
+      };
+    }
+
     const categories = {
       been_there: [],
       want_to_go: [],
@@ -35,7 +45,7 @@ export default function MapSidebar({
     });
 
     return categories;
-  }, [pins]);
+  }, [pins, pinsLoading]);
 
   const customTypes = useMemo(
     () =>
@@ -100,6 +110,37 @@ export default function MapSidebar({
       alert("Failed to delete category. Please try again.");
     }
   };
+
+  // Render loading state
+  if (pinsLoading) {
+    return (
+      <div className={`map-sidebar ${collapsed ? "collapsed" : ""}`}>
+        <div className="sidebar-header">
+          <div className="sidebar-title">My Places</div>
+          <button
+            className="sidebar-toggle"
+            onClick={onToggleCollapse}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? "📌" : "→"}
+          </button>
+        </div>
+
+        {!collapsed && (
+          <div className="sidebar-content">
+            <div className="map-section">
+              <div className="section-title">Loading...</div>
+              <div
+                style={{ textAlign: "center", padding: "20px", color: "#666" }}
+              >
+                Loading your locations...
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={`map-sidebar ${collapsed ? "collapsed" : ""}`}>
