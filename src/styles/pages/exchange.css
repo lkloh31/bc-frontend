@@ -1,12 +1,12 @@
+/* Base Styles / Desktop (1200px+)  */
+
 .exchange-container {
   font-family: "Courier New", Courier, monospace;
   padding: 20px;
-  /* background-color: #f8f9fa; */
   border-radius: 8px;
 }
 
 .converter {
-  font-family: "Courier New", Courier, monospace;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -18,8 +18,7 @@
 .converter h1 {
   font-size: 1.5rem;
   font-weight: 600;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin: 1rem 0;
 }
 
 .converter-input {
@@ -41,8 +40,8 @@ select {
 
 .converter-row {
   display: flex;
-  align-items: center; /* vertically centers input and select */
-  gap: 0.5rem; /* space between input and select */
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .exchange-title {
@@ -64,6 +63,7 @@ select {
   margin-bottom: 1.5rem;
 }
 
+/* Loading & Error Messages */
 .exchange-loading,
 .exchange-error {
   text-align: center;
@@ -75,10 +75,17 @@ select {
   color: red;
 }
 
+/* Table */
+.exchange-table-wrapper {
+  overflow-x: auto; /* horizontal scroll for small screens */
+  -webkit-overflow-scrolling: touch;
+}
+
 .exchange-table {
   width: 100%;
   border-collapse: collapse;
   background: white;
+  min-width: 600px; /* desktop default */
 }
 
 .exchange-table th,
@@ -99,4 +106,154 @@ select {
 
 .exchange-table tr:hover {
   background-color: #e6f7ff;
+}
+
+/* ================================ */
+/* Responsive Adjustments           */
+/* ================================ */
+
+/* Small screens (mobile) */
+@media (max-width: 480px) {
+  .converter h1,
+  .exchange-title {
+    font-size: 1.3rem;
+  }
+
+  .converter-input {
+    width: 8em;
+    font-size: 0.9rem;
+  }
+
+  select {
+    font-size: 1rem;
+  }
+
+  .equals {
+    font-size: 1.5rem;
+  }
+
+  .converter-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filter-input {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+
+  .exchange-table {
+    min-width: 400px; /* allow horizontal scroll */
+  }
+}
+
+/* Extra-small screens: iPhone XR / XE (~414px) */
+@media (max-width: 414px) {
+  .converter {
+    padding: 10px;
+    width: 95%;
+    margin: 0 auto;
+  }
+
+  .converter h1,
+  .exchange-title {
+    font-size: 1.2rem;
+    margin: 0.8rem 0;
+  }
+
+  .converter-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .converter-input {
+    width: 100%;
+    max-width: 150px;
+    margin: 0 auto;
+  }
+
+  select {
+    width: 100%;
+    max-width: 150px;
+    margin: 0 auto;
+  }
+
+  .equals {
+    font-size: 1.3rem;
+    margin: 0.5rem 0;
+  }
+
+  .filter-input {
+    width: 100%;
+    margin: 0 auto 1rem;
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .exchange-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .exchange-table {
+    min-width: 100%;
+    margin: 0 auto;
+  }
+
+  .filter-input {
+    display: block;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 0.5rem; /* optional spacing */
+  }
+}
+
+/* Extra-extra-small screens: iPhone SE (~375px) */
+@media (max-width: 375px) {
+  .converter {
+    padding: 8px;
+    width: 95%;
+    margin: 0 auto;
+  }
+
+  .converter h1,
+  .exchange-title {
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+  }
+
+  .converter-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.4rem;
+  }
+
+  .converter-input,
+  select {
+    width: 100%;
+    max-width: 140px;
+    margin: 0 auto;
+  }
+
+  .equals {
+    font-size: 1.2rem;
+    margin: 0.4rem 0;
+  }
+
+  .filter-input {
+    width: 100%;
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+
+  .exchange-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .exchange-table {
+    min-width: 100%;
+    margin: 0 auto;
+  }
 }

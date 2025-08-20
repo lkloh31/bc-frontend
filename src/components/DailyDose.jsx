@@ -63,6 +63,7 @@ export default function DailyDose() {
             key={link.id}
             value={link}
             style={{
+              position: "relative",
               padding: "10px 20px",
               fontSize: 16,
               cursor: "grab",
@@ -89,6 +90,20 @@ export default function DailyDose() {
             >
               {link.label}
             </Link>
+            {/* Vertical dots on the right */}
+            <span
+              style={{
+                position: "absolute",
+                right: 10,
+                top: "50%",
+                transform: "translateY(-50%)",
+                fontSize: "1.5rem",
+                color: "#666",
+                pointerEvents: "none", // so they don’t block clicks
+              }}
+            >
+              ⋮
+            </span>
           </Reorder.Item>
         ))}
       </Reorder.Group>

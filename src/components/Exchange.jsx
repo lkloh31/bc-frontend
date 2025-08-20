@@ -208,49 +208,51 @@ export default function Exchange() {
         className="filter-input"
       />
 
-      <table className="exchange-table">
-        <thead>
-          <tr>
-            <th>Currency</th>
-            <th>Name</th>
-            <th>Rate</th>
-            <th>Base</th>
-            <th>Last Updated</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {rates
-            .filter((r) => {
-              const name = getCurrencyName(r.currency_code);
-              const query = filter.toLowerCase();
-              return (
-                r.currency_code.toLowerCase().includes(query) ||
-                name.toLowerCase().includes(query) ||
-                r.base_currency.toLowerCase().includes(query)
-              );
-            })
-            .map((rate) => (
-              <tr key={rate.currency_code}>
-                <td>{rate.currency_code}</td>
-                <td>{getCurrencyName(rate.currency_code)}</td>
-                <td>{rate.exchange_rate}</td>
-                <td>{rate.base_currency}</td>
-                <td>{new Date(rate.last_updated).toLocaleString()}</td>
-                <td>
-                  <button
-                    onClick={() => {
-                      addFavourite(rate.currency_code);
-                      setFilter(""); // clear filter when favoriting
-                    }}
-                  >
-                    ⭐ Favorite
-                  </button>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+      <div className="exchange-table-wrapper">
+        <table className="exchange-table">
+          <thead>
+            <tr>
+              <th>Currency</th>
+              <th>Name</th>
+              <th>Rate</th>
+              <th>Base</th>
+              <th>Last Updated</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {rates
+              .filter((r) => {
+                const name = getCurrencyName(r.currency_code);
+                const query = filter.toLowerCase();
+                return (
+                  r.currency_code.toLowerCase().includes(query) ||
+                  name.toLowerCase().includes(query) ||
+                  r.base_currency.toLowerCase().includes(query)
+                );
+              })
+              .map((rate) => (
+                <tr key={rate.currency_code}>
+                  <td>{rate.currency_code}</td>
+                  <td>{getCurrencyName(rate.currency_code)}</td>
+                  <td>{rate.exchange_rate}</td>
+                  <td>{rate.base_currency}</td>
+                  <td>{new Date(rate.last_updated).toLocaleString()}</td>
+                  <td>
+                    <button
+                      onClick={() => {
+                        addFavourite(rate.currency_code);
+                        setFilter(""); // clear filter when favoriting
+                      }}
+                    >
+                      ⭐ Favorite
+                    </button>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

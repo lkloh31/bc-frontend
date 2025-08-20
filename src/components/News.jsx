@@ -113,11 +113,11 @@ export default function News() {
 
       {/* Categories */}
       <div className="news-categories w-full">
-        <div className="flex justify-center items-center pb-[10px]">
+        <div className="category-wrapper">
           {categories.map((cat) => (
             <div
               key={cat}
-              className={`mx-[20px] p-2 cursor-pointer rounded-md ${
+              className={`category mx-[20px] p-2 cursor-pointer rounded-md ${
                 search.toLowerCase() === cat.toLowerCase()
                   ? "bg-gray-700 text-white"
                   : "bg-black text-gray-300"
@@ -141,7 +141,7 @@ export default function News() {
         </div>
 
         {!loading && articles.length === 0 && (
-          <div className="min-h-[calc(100vh-200px)] flex justify-center pt-10">
+          <div className="empty-state">
             <p className="text-center text-gray-500">No articles found</p>
           </div>
         )}
