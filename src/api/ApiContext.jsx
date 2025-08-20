@@ -17,17 +17,12 @@ export function ApiProvider({ children }) {
     // Create headers object
     const headers = {
       "Content-Type": "application/json",
-      ...options.headers, // Allow overriding headers
+      ...options.headers,
     };
 
-    // Only add Authorization header if token exists
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
-
-    console.log("Making request to:", API + resource);
-    console.log("With headers:", headers);
-    console.log("With options:", options);
 
     try {
       const response = await fetch(API + resource, {
@@ -35,13 +30,8 @@ export function ApiProvider({ children }) {
         headers,
       });
 
-      console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers);
-
       const isJson = /json/.test(response.headers.get("Content-Type"));
       const result = isJson ? await response.json() : await response.text();
-
-      console.log("Response result:", result);
 
       if (!response.ok) {
         throw new Error(result?.message || result || "Something went wrong :(");
@@ -56,12 +46,10 @@ export function ApiProvider({ children }) {
 
   const [tags, setTags] = useState({});
 
-  /** Stores the provided query function for a given tag */
   const provideTag = (tag, query) => {
     setTags({ ...tags, [tag]: query });
   };
 
-  /** Calls all query functions associated with the given tags */
   const invalidateTags = (tagsToInvalidate) => {
     tagsToInvalidate.forEach((tag) => {
       const query = tags[tag];

@@ -1,0 +1,53 @@
+/* ===== CUSTOM MARKERS ===== */
+.custom-marker {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  background-color: var(--marker-color, #10b981);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.custom-marker:hover {
+  transform: scale(1.1);
+}
+
+.custom-marker.selected {
+  transform: scale(1.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== MARKER TYPES ===== */
+.been-there-marker {
+  background-color: #10b981;
+  --marker-color: #10b981;
+}
+
+.want-to-go-marker {
+  background-color: #f59e0b;
+  --marker-color: #f59e0b;
+}
+
+.search-result-marker {
+  background-color: #3b82f6;
+  --marker-color: #3b82f6;
+}
+
+/* ===== SEARCH MARKER PULSE ANIMATION ===== */
+.search-marker-pulse {
+  animation: simple-pulse 2s infinite;
+}
+
+@keyframes simple-pulse {
+  0% {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
