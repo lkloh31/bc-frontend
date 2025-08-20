@@ -114,8 +114,7 @@
   color: #333;
 }
 
-/* Music player */
-.spotify-player {
+/* .spotify-player {
   max-width: 500px;
   margin: 1rem auto;
   border-radius: 12px;
@@ -126,6 +125,58 @@
   width: 100%;
   height: 380px;
   border: none;
+} */
+
+/* Replace spotify-player styles with this block */
+
+.music-player {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  /* transform: translateX(-50%); */
+  width: 90%; /* take most of the screen on small devices */
+  width: 340px;
+  height: 180px; /* Height for the full playlist view */
+  background-color: #191414;
+  z-index: 9999;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+.spotify-iframe-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* UPDATED: Styles for the new compact, minimized state */
+.music-player.minimized {
+  height: 80px; /* Height for the compact, single-track view */
+}
+
+/* UPDATED: Styles for the toggle button to fit the new layout */
+.minimize-toggle {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(25, 20, 20, 0.7); /* Dark semi-transparent */
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  z-index: 10; /* Ensure it's above the iframe */
+}
+
+.music-player.minimized .minimize-toggle {
+  background-color: rgba(25, 20, 20, 0.7);
 }
 
 /* ============================= */
@@ -135,7 +186,7 @@
 /* Medium screens (tablet) */
 @media (max-width: 768px) {
   .main-content {
-    padding-bottom: 200px; /* leave room for music player, increase if needed */
+    padding-bottom: 200px; /* leave room for music player */
   }
 
   .homepage-mood-section .mood-tracker .mood-options {
@@ -146,16 +197,17 @@
   .login-prompt {
     order: 2;
   }
-  .spotify-player {
+
+  .music-player {
     order: 3;
-    margin-top: 1rem; /* add spacing so it doesn’t crowd */
+    margin-top: 1rem; /* spacing from other content */
   }
 }
 
 /* Small screens (mobile) */
 @media (max-width: 480px) {
   .main-content {
-    padding-bottom: 200px; /* leave room for music player, increase if needed */
+    padding-bottom: 200px; /* leave room for music player */
   }
 
   .homepage-mood-section .mood-tracker .mood-options {
@@ -176,13 +228,16 @@
     order: 2;
     position: relative;
     z-index: 2;
-    margin-bottom: 1rem; /* ensure space below the text */
+    margin-bottom: 1rem;
   }
 
-  .spotify-player {
-    order: 3;
-    position: relative;
-    z-index: 1;
-    margin-top: 1rem; /* double safety */
+  /* Center the music player at the bottom */
+  .music-player {
+    left: 50%; /* horizontal center */
+    right: auto; /* cancel right positioning */
+    transform: translateX(-50%);
+    bottom: 10px;
+    width: 90%; /* shrink to fit small screens */
+    max-width: 340px; /* maintain maximum width */
   }
 }
