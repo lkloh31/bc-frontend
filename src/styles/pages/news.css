@@ -19,7 +19,7 @@
   position: sticky;
   top: 160px; /* main navbar height + news navbar height */
   z-index: 150;
-  padding: 10px 0;
+  padding: 20px 0 5px;
 }
 
 .news-categories .category-wrapper {
@@ -59,11 +59,62 @@
 /* Responsive adjustments */
 /* ============================= */
 
+/* iPad Air portrait (~820px) */
+@media (min-width: 800px) and (max-width: 834px) {
+  .search-navbar {
+    font-size: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+    line-height: 1.2; /* tighter text spacing */
+    min-height: 40px; /* force a smaller navbar height */
+  }
+
+  .search-input-label {
+    height: 20px !important; /* shorter input box */
+    padding: 2px 6px !important; /* less padding inside */
+    font-size: 12px !important;
+  }
+
+  .news-categories .category-wrapper {
+    display: flex !important; /* force flex */
+    flex-wrap: wrap !important; /* allow wrapping */
+    justify-content: center !important;
+    gap: 6px !important; /* controls exact spacing between items */
+  }
+
+  .news-categories .category {
+    flex: 1 1 30% !important; /* each category ~45% width */
+    margin: 0 !important; /* smaller margins so 2 fit per row */
+    font-size: 12px;
+    text-align: center;
+  }
+}
+
 /* iPad Mini portrait (~768px wide, ~1024px tall) */
-@media (min-width: 600px) and (max-width: 768px) {
+@media (min-width: 768px) and (max-width: 800px) {
   .articles-wrapper {
     height: calc(100vh - 240px); /* 100 main + 70 search + 70 categories */
     overflow-y: auto;
+  }
+
+  .search-navbar {
+    font-size: 12px;
+    padding: 8px 8px;
+    margin-bottom: 20px;
+    line-height: 1.2; /* tighter text spacing */
+    height: 40px; /* force a smaller navbar height */
+  }
+
+  .navbar-title {
+    font-size: 24px;
+  }
+
+  .search-input-label {
+    height: 10px !important;
+    line-height: 10px !important; /* align text inside */
+    padding: 2px 6px !important; /* smaller padding */
+    font-size: 12px !important; /* smaller font */
   }
 }
 
@@ -102,16 +153,15 @@
 @media (max-width: 480px) {
   .news-container nav {
     flex-direction: column;
-    align-items: stretch;
-    padding: 10px;
+    align-items: center;
+    padding: 6px;
     position: sticky;
     top: 60px; /* closer to main navbar */
     z-index: 200;
   }
 
-  .news-container nav input {
-    width: 100%;
-    margin-bottom: 8px;
+  .news-container nav h4 {
+    font-size: 20px; /* smaller title */
   }
 
   .news-categories {
@@ -145,6 +195,13 @@
   }
 }
 
+/* iPhone XR/XE (~414px) */
+@media (max-width: 414px) {
+  .news-categories .category {
+    flex: 1 1 32%; /* ~3 per row, slightly wider */
+  }
+}
+
 /* Extra-small screens (iPhone SE, etc. ≤375px) */
 @media (max-width: 375px) {
   .news-container nav input {
@@ -161,12 +218,5 @@
   .articles-wrapper {
     height: calc(100vh - 230px); /* 100 main + 60 search + 70 categories */
     overflow-y: auto;
-  }
-}
-
-/* iPhone XR/XE (~414px) */
-@media (max-width: 414px) {
-  .news-categories .category {
-    flex: 1 1 32%; /* ~3 per row, slightly wider */
   }
 }
