@@ -51,19 +51,19 @@ export function useMapbox(token) {
 
       map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
 
-      map.current.on("move", () => {
-        if (updateTimeoutRef.current) {
-          clearTimeout(updateTimeoutRef.current);
-        }
-        updateTimeoutRef.current = setTimeout(updateCoordinates, 100);
-      });
+      // map.current.on("move", () => {
+      //   if (updateTimeoutRef.current) {
+      //     clearTimeout(updateTimeoutRef.current);
+      //   }
+      //   updateTimeoutRef.current = setTimeout(updateCoordinates, 100);
+      // });
 
-      map.current.on("moveend", () => {
-        if (updateTimeoutRef.current) {
-          clearTimeout(updateTimeoutRef.current);
-        }
-        updateCoordinates();
-      });
+      // map.current.on("moveend", () => {
+      //   if (updateTimeoutRef.current) {
+      //     clearTimeout(updateTimeoutRef.current);
+      //   }
+      //   updateCoordinates();
+      // });
 
       map.current.on("load", () => {
         setMapLoaded(true);
