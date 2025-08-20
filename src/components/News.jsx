@@ -91,8 +91,8 @@ export default function News() {
   return (
     <div className="news-container h-100vh w-full">
       {/* Navbar */}
-      <nav className="flex justify-between p-5 bg-black">
-        <h4 className="text-gray-400 text-3xl">News</h4>
+      <nav className="search-navbar flex justify-between p-5 bg-black">
+        <h4 className="navbar-title text-gray-300 text-4xl">News</h4>
         <div className="bg-white flex justify-center items-center">
           <input
             type="text"
@@ -102,7 +102,7 @@ export default function News() {
               if (e.key === "Enter") searchNews(inputValue);
             }}
             placeholder="Search news..."
-            className="w-[300px] h-[30px] bg-white p-2 outline-none"
+            className="search-input-label w-[300px] h-[30px] bg-white p-2 outline-none"
           />
           <FaSearch
             onClick={() => searchNews(inputValue)}
