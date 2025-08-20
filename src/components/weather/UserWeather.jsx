@@ -4,8 +4,10 @@ import LocationSearch from "./LocationSearch";
 import WeatherHUD from "./WeatherHud";
 import SavedLocationsBar from "./SavedLocationsBar";
 import useSavedLocations from "../../hooks/useSavedLocations";
-import "../../styles/pages/weather/weather.css";
-import "../../styles/pages/weather/weather-page.css"; 
+import "../../styles/pages/weather/weather-page.css";
+import "../../styles/pages/weather/weather-hud.css";
+import "../../styles/pages/weather/saved-locations.css";
+
 
 
 const API_BASE = ("http://localhost:3000").replace(/\/$/, "");
@@ -25,18 +27,6 @@ const WMO = {
 const codeToIcon = (c) => WMO[c] || "cloud";
 
 function moodFromData(dataset) {
-  const codeToIcon = (c) =>
-    ({0:"sun",1:"sun",2:"cloudSun",3:"cloud",
-      45:"fog",48:"fog",
-      51:"drizzle",53:"drizzle",55:"drizzle",
-      56:"sleet",57:"sleet",
-      61:"rain",63:"rain",65:"rain",
-      66:"sleet",67:"sleet",
-      71:"snow",73:"snow",75:"snow",77:"snow",
-      80:"rain",81:"rain",82:"rain",
-      85:"snow",86:"snow",
-      95:"storm",96:"storm",99:"storm"}[c]) || "cloud";
-
   const curIcon = codeToIcon(dataset?.current?.weather_code);
 
   const hourlyW = dataset?.hourly?.weather_code || [];
@@ -79,6 +69,7 @@ export default function UserWeather() {
       ro.disconnect();
     };
   }, []);
+
   const [units] = useState("imperial");
 
   const { data: savedData, loading: loadingSaved, error: errorSaved } =
@@ -152,16 +143,18 @@ export default function UserWeather() {
   const cond = moodFromData(activeData);
 
   return (
-    <div className={`wx wx--${cond || "cloud"} wx--force-anim`}>
-      {/* Animated background layers (fixed, behind everything) */}
-      <div className="wx-bg" aria-hidden>
-        <div className="wx-bg__gradient" />
-        <div className="wx-bg__clouds" />
-        <div className="wx-bg__rain" />
-        <div className="wx-bg__snow" />
-        <div className="wx-bg__flash" />
-        <div className="wx-bg__fog" />
-      </div>
+    
+      <div className={`wx wx--${cond || "cloud"} wx--force-anim`}>
+        {/* Animated background layers (fixed, behind everything) */}
+        <div className="wx-bg" aria-hidden>
+          <div className="wx-bg__gradient" />
+          <div className="wx-bg__clouds" />
+          <div className="wx-bg__rain" />
+          <div className="wx-bg__snow" />
+          <div className="wx-bg__flash" />
+          <div className="wx-bg__fog" />
+        </div>
+    
 
       {/* FIXED header */}
       <header className="wx__header">
@@ -180,7 +173,7 @@ export default function UserWeather() {
         </div>
       </header>
 
-      <div className="wx__spacer" aria-hidden="true" />
+      {/* <div className="wx__spacer" aria-hidden="true" /> */}
 
       <SavedLocationsBar
         items={saved.items}

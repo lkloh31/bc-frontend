@@ -1,16 +1,20 @@
+/* ===== Saved locations (chips + menu) ===== */
 .wx-saved{
   display:flex; gap:10px;
-  overflow-x:auto;
-  overflow-y:visible;
-  padding:10px clamp(16px,4vw,48px);
+  overflow-x:auto; overflow-y:visible;
+  padding:10px var(--pad-x);
   margin-top:10px; scrollbar-width:thin;
-  position:relative;
-  z-index:800;
+  position:relative; z-index:800;
+
+  scroll-snap-type: x proximity;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
 }
 .wx-chip{
   display:flex; align-items:center; gap:10px; background:rgba(0,0,0,.30);
   border:1px solid rgba(255,255,255,.16); color:#fff; padding:8px 10px;
   border-radius:12px; backdrop-filter: blur(6px); cursor:pointer; position:relative;
+  scroll-snap-align: start;
 }
 .wx-chip.is-active{ box-shadow:0 0 0 2px #4da3ff inset; }
 .wx-chip--add{ background:rgba(0,0,0,.4); border-style:dashed; }
@@ -26,73 +30,43 @@
 }
 .wx-chip-menu:hover{ background:rgba(255,255,255,.12); }
 
-
+/* Mobile adjustments */
 @media (max-width:640px){
   .wx-chip-name{ font-size:14px; }
   .wx-chip-meta{ display:none; }
 }
+@media (max-width:480px){
+  .wx-chip{ padding:6px 8px; gap:8px; border-radius:10px; }
+  .wx-chip-menu{ width:22px; height:22px; font-size:16px; }
+}
 
+/* Popover menu */
 .wx-pop{
-  /* tune these if you want a different vibe */
   --bg: rgba(16, 18, 24, .92);
   --text: #f6f8ff;
   --bd: rgba(255,255,255,.12);
   --hover: rgba(255,255,255,.08);
   --danger: #ff6b6b;
 
-  position: fixed;
-  min-width: 200px;
-  color: var(--text);
-  background: var(--bg);
+  position: fixed; z-index: 4000;
+  min-width: 200px; max-width: min(90vw, 320px);
+  color: var(--text); background: var(--bg);
   border: 1px solid var(--bd);
-  border-radius: 12px;
-  padding: 8px;
+  border-radius: 12px; padding: 8px;
   box-shadow: 0 18px 48px rgba(5, 10, 25, .45);
-  backdrop-filter: blur(10px);       /* subtle glass */
-  -webkit-backdrop-filter: blur(10px);
-  z-index: 4000;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 
   animation: wx-pop-in 120ms ease-out;
 }
-
-@keyframes wx-pop-in {
-  from { transform: translateY(-2px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
+@keyframes wx-pop-in { from{ transform: translateY(-2px); opacity:0; } to{ transform: translateY(0); opacity:1; } }
 
 .wx-pop button{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 12px;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  letter-spacing: .2px;
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 12px;
+  border: 0; background: transparent; color: inherit;
+  border-radius: 8px; cursor: pointer; font-size: 14px; letter-spacing: .2px;
 }
-
-.wx-pop button:hover,
-.wx-pop button:focus-visible{
-  background: var(--hover);
-  outline: none;
-}
-
-/* light divider between items */
-.wx-pop button + button{
-  margin-top: 4px;
-  border-top: 1px solid var(--bd);
-  padding-top: 12px;
-}
-
-/* make the last action (Remove) look destructive without changing markup */
-.wx-pop button:last-child{
-  color: var(--danger);
-}
-.wx-pop button:last-child:hover{
-  background: rgba(255,107,107,.14);
-}
-
+.wx-pop button:hover, .wx-pop button:focus-visible{ background: var(--hover); outline: none; }
+.wx-pop button + button{ margin-top: 4px; border-top: 1px solid var(--bd); padding-top: 12px; }
+.wx-pop button:last-child{ color: var(--danger); }
+.wx-pop button:last-child:hover{ background: rgba(255,107,107,.14); }

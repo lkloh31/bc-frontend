@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import "../../styles/pages/weather/weather-page.css";
 
 async function geocode(q) {
   if (!q?.trim()) return [];
