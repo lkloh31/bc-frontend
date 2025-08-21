@@ -2,26 +2,28 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { useApi } from "../../api/ApiContext";
 import mapboxgl from "mapbox-gl";
 
+const DEFAULT_COORDINATES = {
+  lng: -122.4194,
+  lat: 37.7749,
+  zoom: 10,
+};
+
 export function useMapbox(token) {
   const { request } = useApi();
+
+  // Refs
   const mapContainer = useRef(null);
   const map = useRef(null);
   const updateTimeoutRef = useRef(null);
 
-  const [lng, setLng] = useState(-122.4194);
-  const [lat, setLat] = useState(37.7749);
-  const [zoom, setZoom] = useState(10);
+  // State
+  const [lng, setLng] = useState(DEFAULT_COORDINATES.lng);
+  const [lat, setLat] = useState(DEFAULT_COORDINATES.lat);
+  const [zoom, setZoom] = useState(DEFAULT_COORDINATES.zoom);
   const [mapboxToken, setMapboxToken] = useState(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  const updateCoordinates = () => {
-    if (!map.current) return;
-
-    setLng(map.current.getCenter().lng.toFixed(4));
-    setLat(map.current.getCenter().lat.toFixed(4));
-    setZoom(map.current.getZoom().toFixed(2));
-  };
-
+  // Get Mapbox token
   useEffect(() => {
     const getMapboxToken = async () => {
       if (!token) return;
@@ -38,6 +40,7 @@ export function useMapbox(token) {
     getMapboxToken();
   }, [token, request]);
 
+  // Initialize map
   useEffect(() => {
     if (map.current || !mapboxToken || !mapContainer.current) return;
 
@@ -49,22 +52,10 @@ export function useMapbox(token) {
         zoom: zoom,
       });
 
+      // Add navigation controls
       map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
 
-      // map.current.on("move", () => {
-      //   if (updateTimeoutRef.current) {
-      //     clearTimeout(updateTimeoutRef.current);
-      //   }
-      //   updateTimeoutRef.current = setTimeout(updateCoordinates, 100);
-      // });
-
-      // map.current.on("moveend", () => {
-      //   if (updateTimeoutRef.current) {
-      //     clearTimeout(updateTimeoutRef.current);
-      //   }
-      //   updateCoordinates();
-      // });
-
+      // Map event handlers
       map.current.on("load", () => {
         setMapLoaded(true);
       });
@@ -76,6 +67,7 @@ export function useMapbox(token) {
       console.error("Error initializing map:", error);
     }
 
+    // Cleanup function
     return () => {
       if (updateTimeoutRef.current) {
         clearTimeout(updateTimeoutRef.current);
@@ -86,20 +78,25 @@ export function useMapbox(token) {
         setMapLoaded(false);
       }
     };
-  }, [mapboxToken]);
+  }, [mapboxToken, lng, lat, zoom]);
 
+  // Add click handler to map
   const addClickHandler = useCallback((onMapClick) => {
     if (!map.current) return;
 
+    // Remove existing click handlers
     map.current.off("click");
 
     map.current.on("click", (e) => {
-      if (window.hasOpenPopup && window.hasOpenPopup()) {
-        window.closeAllPopups();
+      // Check if any popup is open
+      if (window.hasOpenPopup?.()) {
+        window.closeAllPopups?.();
         return;
       }
 
       const clickedElement = e.originalEvent.target;
+
+      // Check if click was on a marker or control
       const isMarkerOrControl =
         clickedElement &&
         (clickedElement.classList.contains("custom-marker") ||
@@ -111,9 +108,11 @@ export function useMapbox(token) {
 
       if (isMarkerOrControl) return;
 
+      // Check if click was on a map feature
       const features = map.current.queryRenderedFeatures(e.point);
-      if (features && features.length > 0) return;
+      if (features?.length > 0) return;
 
+      // Handle map click
       onMapClick(e);
     });
   }, []);

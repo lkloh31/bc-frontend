@@ -1,6 +1,14 @@
 import { useState, useMemo, useEffect } from "react";
 import StarRating from "./StarRating";
 
+const DEFAULT_FORM_DATA = {
+  name: "",
+  address: "",
+  notes: "",
+  rating: "",
+  locationType: "been_there",
+};
+
 export default function AddPinModal({
   onClose,
   onSubmit,
@@ -9,16 +17,10 @@ export default function AddPinModal({
   selectedLocation = null,
   searchData = null,
 }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    address: "",
-    notes: "",
-    rating: "",
-    locationType: "been_there",
-  });
+  const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [hoveredRating, setHoveredRating] = useState(0);
 
-  // Prefill form if searchData exists/changes
+  // Prefill form when searchData changes
   useEffect(() => {
     if (searchData) {
       setFormData((prev) => ({
@@ -29,37 +31,31 @@ export default function AddPinModal({
     }
   }, [searchData]);
 
-  // List all location_type
-  const allLocationTypes = useMemo(
-    () => [
+  // Generate all location types with proper formatting
+  const allLocationTypes = useMemo(() => {
+    const baseTypes = [
       { value: "been_there", label: "Been There" },
       { value: "want_to_go", label: "Want to Go" },
-      ...locationTypes
-        .filter((type) => type !== "been_there" && type !== "want_to_go")
-        .map((type) => ({
-          value: type,
-          label: type
-            .split("_")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" "),
-        })),
-    ],
-    [locationTypes]
-  );
+    ];
 
-  // Reset add pin form
+    const customTypes = locationTypes
+      .filter((type) => !["been_there", "want_to_go"].includes(type))
+      .map((type) => ({
+        value: type,
+        label: type
+          .split("_")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
+      }));
+
+    return [...baseTypes, ...customTypes];
+  }, [locationTypes]);
+
   const resetForm = () => {
-    setFormData({
-      name: "",
-      address: "",
-      notes: "",
-      rating: "",
-      locationType: "been_there",
-    });
+    setFormData(DEFAULT_FORM_DATA);
     setHoveredRating(0);
   };
 
-  // Process form submission and then reset form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -70,34 +66,30 @@ export default function AddPinModal({
     }
   };
 
-  // Close form modal and reset form
   const handleClose = () => {
     resetForm();
     onClose();
   };
 
-  // Close form modal on ESC
   const handleKeyDown = (e) => {
     if (e.key === "Escape") {
       handleClose();
     }
   };
 
-  // Set form data
   const updateFormData = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleRatingChange = (rating) => {
+    updateFormData("rating", rating.toString());
+  };
+
+  const isSubmitDisabled = isLoading || !formData.name.trim();
+
   return (
     <div className="modal-overlay" onClick={handleClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button
-          className="modal-close-btn"
-          onClick={handleClose}
-          aria-label="Close modal"
-        >
-          ×
-        </button>
         <h3>Add New Location</h3>
 
         <form onSubmit={handleSubmit} className="add-pin-form">
@@ -109,9 +101,9 @@ export default function AddPinModal({
               value={formData.name}
               onChange={(e) => updateFormData("name", e.target.value)}
               onKeyDown={handleKeyDown}
-              required
               placeholder="Location name"
               disabled={isLoading}
+              required
             />
           </div>
 
@@ -148,9 +140,7 @@ export default function AddPinModal({
             <label>Rating</label>
             <StarRating
               rating={parseInt(formData.rating) || 0}
-              onRatingChange={(rating) =>
-                updateFormData("rating", rating.toString())
-              }
+              onRatingChange={handleRatingChange}
               hoveredRating={hoveredRating}
               onHover={setHoveredRating}
               onLeave={() => setHoveredRating(0)}
@@ -175,7 +165,7 @@ export default function AddPinModal({
             <button type="button" onClick={handleClose} disabled={isLoading}>
               Cancel
             </button>
-            <button type="submit" disabled={isLoading || !formData.name.trim()}>
+            <button type="submit" disabled={isSubmitDisabled}>
               {isLoading ? "Adding..." : "Add Location"}
             </button>
           </div>

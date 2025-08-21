@@ -50,32 +50,255 @@
   left: 20px;
   background: rgba(255, 255, 255, 0.95);
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 12px;
   color: #333;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
   backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+/* ===== CURRENT LOCATION BUTTON ===== */
 .current-location-btn {
   position: absolute;
   bottom: 20px;
   right: 20px;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   background: white;
-  border: none;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 100;
   transition: all 0.2s ease;
-  font-size: 18px;
+  font-size: 30px;
+  padding: 5px 5px 11px 8px;
   color: #374151;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.current-location-btn:hover {
+  background-color: #f9fafb;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.current-location-btn:active {
+  transform: translateY(0);
+}
+
+.current-location-btn.loading {
+  cursor: not-allowed;
+}
+
+.current-location-btn.error {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.current-location-btn span {
+  display: inline-block;
+  transform: rotate(-135deg);
+  transition: transform 0.2s ease;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.location-error {
+  position: absolute;
+  bottom: 75px;
+  right: 20px;
+  background: #ef4444;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 150;
+  max-width: 200px;
+  text-align: center;
+}
+
+.location-error.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===== MAPBOX NAVIGATION CONTROLS ===== */
+.mapboxgl-ctrl-group {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: "Courier New", Courier, monospace;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.mapboxgl-ctrl-top-right {
+  top: 20px;
+  right: 20px;
+}
+
+.mapboxgl-ctrl-group button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  font-size: 16px;
+  color: #374151;
+  position: relative;
+}
+
+.mapboxgl-ctrl-group button:hover {
+  background-color: #f9fafb;
+}
+
+.mapboxgl-ctrl-group button:active {
+  background-color: #f3f4f6;
+}
+
+.mapboxgl-ctrl-group button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mapboxgl-ctrl-zoom-in,
+.mapboxgl-ctrl-zoom-out,
+.mapboxgl-ctrl-compass {
+  border-radius: 0;
+}
+
+.mapboxgl-ctrl-group button:first-child {
+  border-radius: 6px 6px 0 0;
+}
+
+.mapboxgl-ctrl-group button:last-child {
+  border-radius: 0 0 6px 6px;
+}
+
+.mapboxgl-ctrl-group button:only-child {
+  border-radius: 6px;
+}
+
+/* Hide default button content and use centered pseudo-elements */
+.mapboxgl-ctrl-zoom-in .mapboxgl-ctrl-icon,
+.mapboxgl-ctrl-zoom-out .mapboxgl-ctrl-icon,
+.mapboxgl-ctrl-compass .mapboxgl-ctrl-icon {
+  display: none;
+}
+
+.mapboxgl-ctrl-compass {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mapboxgl-ctrl-compass .mapboxgl-ctrl-compass-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.mapboxgl-ctrl-zoom-in::before {
+  content: "+";
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mapboxgl-ctrl-zoom-out::before {
+  content: "−";
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mapboxgl-ctrl-compass::before {
+  content: "▲";
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ===== MAP MARKER CENTERING ===== */
+.mapboxgl-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mapboxgl-marker svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mapboxgl-marker .mapboxgl-marker-anchor-center {
+  transform: translate(0, 0);
+}
+
+.mapboxgl-user-location-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -101,6 +324,25 @@
   }
 }
 
+@media screen and (max-width: 768px) {
+  .mapboxgl-ctrl-top-right {
+    right: 15px;
+  }
+
+  .map-info {
+    bottom: 15px;
+    left: 15px;
+    font-size: 11px;
+  }
+
+  .current-location-btn {
+    bottom: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
 @media screen and (max-width: 480px) {
   .map-page {
     padding-top: 65px;
@@ -111,10 +353,29 @@
     height: calc(100vh - 65px);
   }
 
+  .mapboxgl-ctrl-top-right {
+    right: 10px;
+  }
+
   .map-info {
-    bottom: 15px;
-    left: 15px;
-    font-size: 11px;
+    bottom: 10px;
+    left: 10px;
+    padding: 6px 10px;
+  }
+
+  .current-location-btn {
+    bottom: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+    padding: 6px;
+  }
+
+  .location-error {
+    bottom: 55px;
+    right: 10px;
+    max-width: 180px;
   }
 }
 
@@ -126,11 +387,6 @@
   .map-box {
     top: 60px;
     height: calc(100vh - 60px);
-  }
-
-  .map-info {
-    bottom: 10px;
-    left: 10px;
   }
 }
 

@@ -1,12 +1,12 @@
 /* ===== SEARCH BAR ===== */
 .map-search-container {
   position: absolute;
-  top: 140px; /* Position below navbar (120px) + margin */
+  top: 140px;
   left: 20px;
   width: 400px;
   max-width: calc(100vw - 40px);
-  z-index: 1000; /* High z-index to ensure visibility */
-  pointer-events: auto; /* Ensure interactions work */
+  z-index: 200;
+  pointer-events: auto;
 }
 
 .map-search-input-wrapper {
@@ -15,7 +15,8 @@
   align-items: center;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .search-icon {
@@ -31,6 +32,7 @@
   outline: none;
   font-size: 16px;
   background: transparent;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .map-search-input::placeholder {
@@ -50,15 +52,6 @@
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 .search-clear-btn {
   padding: 12px;
   border: none;
@@ -66,6 +59,7 @@
   cursor: pointer;
   color: #6b7280;
   font-size: 14px;
+  transition: color 0.2s ease;
 }
 
 .search-clear-btn:hover {
@@ -80,10 +74,12 @@
   right: 0;
   background: white;
   border-radius: 0 0 8px 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   max-height: 300px;
   overflow-y: auto;
-  z-index: 1001; /* Higher than search container */
+  z-index: 250;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: none;
 }
 
 .search-result-item {
@@ -119,11 +115,13 @@
   font-weight: 500;
   color: #1f2937;
   margin-bottom: 2px;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .result-secondary {
   font-size: 12px;
   color: #6b7280;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .search-no-results {
@@ -131,13 +129,13 @@
   text-align: center;
   color: #6b7280;
   font-size: 14px;
+  font-family: "Courier New", Courier, monospace;
 }
 
 /* ===== RESPONSIVE SEARCH ===== */
 @media screen and (max-width: 1020px) {
   .map-search-container {
-    top: 110px; /* Adjust for smaller navbar */
-    left: 20px;
+    top: 110px;
     width: 350px;
   }
 }
@@ -145,15 +143,14 @@
 @media screen and (max-width: 900px) and (max-height: 500px) {
   .map-search-container {
     top: 85px;
-    left: 15px;
     width: 300px;
   }
 }
 
 @media (max-width: 768px) {
   .map-search-container {
-    left: 20px;
-    right: 360px; /* Leave space for sidebar toggle */
+    left: 15px;
+    right: 380px;
     width: auto;
     max-width: none;
     top: 110px;
@@ -163,16 +160,28 @@
 @media (max-width: 480px) {
   .map-search-container {
     top: 80px;
-    left: 15px;
-    right: 60px; /* Space for sidebar toggle */
+    left: 10px;
+    right: 60px;
     width: auto;
+  }
+
+  .map-search-input {
+    font-size: 14px;
+  }
+
+  .search-icon {
+    padding: 10px;
+  }
+
+  .search-clear-btn {
+    padding: 10px;
   }
 }
 
 @media screen and (max-width: 320px) {
   .map-search-container {
     top: 70px;
-    left: 10px;
+    left: 8px;
     right: 50px;
   }
 }
@@ -180,7 +189,6 @@
 @media screen and (max-height: 500px) and (orientation: landscape) {
   .map-search-container {
     top: 70px;
-    left: 15px;
     width: 300px;
   }
 }

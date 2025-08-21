@@ -7,6 +7,10 @@ export default function LocationList({
   onDeleteLocation,
   locationTypes = [],
 }) {
+  if (!pins?.length) {
+    return <div className="location-list" />;
+  }
+
   return (
     <div className="location-list">
       {pins.map((pin) => (

@@ -1,17 +1,43 @@
 /* ===== ADD PIN MODAL ===== */
 .modal-overlay {
   position: fixed;
-  top: 120px;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 300;
   padding: 20px;
+  padding-top: 140px;
+  font-family: "Courier New", Courier, monospace;
   overflow-y: auto;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  font-family: "Courier New", Courier, monospace;
+  margin: auto;
+}
+
+.modal-content h3 {
+  margin: 0 0 24px 0;
+  font-size: 20px;
+  font-weight: bold;
+  color: #1f2937;
+  font-family: "Courier New", Courier, monospace;
 }
 
 /* ===== FORM STYLES ===== */
@@ -19,6 +45,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .form-group {
@@ -29,8 +56,11 @@
 
 .form-group label {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: bold;
   color: #374151;
+  font-family: "Courier New", Courier, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .form-group input,
@@ -40,7 +70,9 @@
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font-family: "Courier New", Courier, monospace;
+  background: white;
+  transition: all 0.15s ease;
 }
 
 .form-group input:focus,
@@ -48,7 +80,7 @@
 .form-group textarea:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .form-group input:disabled,
@@ -57,6 +89,7 @@
   background-color: #f9fafb;
   color: #6b7280;
   cursor: not-allowed;
+  border-color: #e5e7eb;
 }
 
 .form-group textarea {
@@ -68,15 +101,16 @@
 .star-rating {
   display: flex;
   align-items: center;
-  /* justify-content: center; */
-  gap: 4px;
+  justify-content: center;
+  gap: 8px;
 }
 
 .star {
-  font-size: 30px;
+  font-size: 48px;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, color 0.15s ease;
   user-select: none;
+  color: #d1d5db;
 }
 
 .star:hover {
@@ -87,14 +121,12 @@
   color: #fbbf24;
 }
 
-.star:not(.filled) {
-  color: #d1d5db;
-}
-
 .rating-text {
   margin-left: 8px;
-  font-size: 14px;
+  font-size: 12px;
   color: #6b7280;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
 }
 
 /* ===== FORM ACTIONS ===== */
@@ -107,45 +139,91 @@
 
 .form-actions button {
   padding: 12px 24px;
-  border: none;
+  border: 2px solid;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: "Courier New", Courier, monospace;
   cursor: pointer;
   transition: all 0.15s ease;
   min-width: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .form-actions button[type="button"] {
-  background-color: #f3f4f6;
-  color: #374151;
+  background-color: white;
+  color: #6b7280;
+  border-color: #d1d5db;
 }
 
 .form-actions button[type="button"]:hover:not(:disabled) {
-  background-color: #e5e7eb;
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+  color: #374151;
 }
 
 .form-actions button[type="submit"] {
-  background-color: #3b82f6;
-  color: white;
+  background-color: white;
+  color: #3b82f6;
+  border-color: #3b82f6;
 }
 
 .form-actions button[type="submit"]:hover:not(:disabled) {
-  background-color: #2563eb;
+  background-color: #3b82f6;
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 
 .form-actions button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background-color: #f9fafb;
+  color: #9ca3af;
+  border-color: #e5e7eb;
 }
 
 /* ===== RESPONSIVE FORMS ===== */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 15px;
+  }
+
+  .modal-content {
+    margin: 0;
+    max-width: none;
+    width: 100%;
+    padding: 20px;
+    max-height: 85vh;
+  }
+}
+
 @media (max-width: 480px) {
+  .modal-overlay {
+    padding: 10px;
+  }
+
+  .modal-content {
+    padding: 16px;
+    max-height: 90vh;
+  }
+
   .form-actions {
     flex-direction: column;
   }
 
   .form-actions button {
     width: 100%;
+  }
+}
+
+@media (max-width: 320px) {
+  .modal-content {
+    padding: 14px;
+  }
+
+  .modal-content h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
   }
 }

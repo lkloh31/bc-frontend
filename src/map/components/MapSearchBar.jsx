@@ -1,5 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 
+const SEARCH_DELAY = 300;
+const RESULT_LIMIT = 5;
+const MAPBOX_GEOCODING_URL =
+  "https://api.mapbox.com/geocoding/v5/mapbox.places";
+const SEARCH_TYPES = "place,postcode,locality,neighborhood,address";
+
 export default function MapSearchBar({
   mapboxToken,
   onLocationSelect,
@@ -10,25 +16,21 @@ export default function MapSearchBar({
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+
   const searchTimeout = useRef(null);
   const searchContainerRef = useRef(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        searchContainerRef.current &&
-        !searchContainerRef.current.contains(event.target)
-      ) {
-        setShowResults(false);
-        setSelectedIndex(-1);
-      }
+      if (searchContainerRef.current?.contains(event.target)) return;
+
+      setShowResults(false);
+      setSelectedIndex(-1);
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const searchLocation = async (searchQuery) => {
@@ -36,24 +38,28 @@ export default function MapSearchBar({
 
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          searchQuery
-        )}.json?access_token=${mapboxToken}&limit=5&types=place,postcode,locality,neighborhood,address`
-      );
+      const url = `${MAPBOX_GEOCODING_URL}/${encodeURIComponent(
+        searchQuery
+      )}.json`;
+      const params = new URLSearchParams({
+        access_token: mapboxToken,
+        limit: RESULT_LIMIT,
+        types: SEARCH_TYPES,
+      });
+
+      const response = await fetch(`${url}?${params}`);
 
       if (!response.ok) {
         throw new Error("Search failed");
       }
 
       const data = await response.json();
-      setResults(data.features || []);
+      const features = data.features || [];
+
+      setResults(features);
       setShowResults(true);
       setSelectedIndex(-1);
-
-      if (onSearchResult) {
-        onSearchResult(data.features || []);
-      }
+      onSearchResult?.(features);
     } catch (error) {
       console.error("Geocoding error:", error);
       setResults([]);
@@ -74,11 +80,9 @@ export default function MapSearchBar({
     if (value.trim()) {
       searchTimeout.current = setTimeout(() => {
         searchLocation(value);
-      }, 300);
+      }, SEARCH_DELAY);
     } else {
-      setResults([]);
-      setShowResults(false);
-      setSelectedIndex(-1);
+      clearSearch();
     }
   };
 
@@ -111,20 +115,19 @@ export default function MapSearchBar({
 
   const handleLocationSelect = (location) => {
     const [lng, lat] = location.center;
+
     setQuery(location.place_name);
     setShowResults(false);
     setSelectedIndex(-1);
 
-    if (onLocationSelect) {
-      onLocationSelect({
-        lng,
-        lat,
-        name: location.text || location.place_name,
-        fullName: location.place_name,
-        address: location.properties?.address || "",
-        location,
-      });
-    }
+    onLocationSelect?.({
+      lng,
+      lat,
+      name: location.text || location.place_name,
+      fullName: location.place_name,
+      address: location.properties?.address || "",
+      location,
+    });
   };
 
   const clearSearch = () => {
@@ -136,40 +139,46 @@ export default function MapSearchBar({
 
   const formatLocationText = (feature) => {
     const parts = feature.place_name.split(", ");
-    const primary = parts[0];
-    const secondary = parts.slice(1).join(", ");
+    return {
+      primary: parts[0],
+      secondary: parts.slice(1).join(", "),
+    };
+  };
 
-    return { primary, secondary };
+  const handleFocus = () => {
+    if (results.length > 0) {
+      setShowResults(true);
+    }
   };
 
   return (
     <div className="map-search-container" ref={searchContainerRef}>
       <div className="map-search-input-wrapper">
         <div className="search-icon">🔍</div>
+
         <input
           type="text"
           value={query}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          onFocus={() => {
-            if (results.length > 0) {
-              setShowResults(true);
-            }
-          }}
+          onFocus={handleFocus}
           placeholder="Search for a location..."
           className="map-search-input"
           disabled={!mapboxToken}
         />
+
         {isLoading && (
           <div className="search-loading">
-            <div className="search-spinner"></div>
+            <div className="search-spinner" />
           </div>
         )}
+
         {query && (
           <button
             onClick={clearSearch}
             className="search-clear-btn"
             aria-label="Clear search"
+            type="button"
           >
             ✕
           </button>
@@ -180,12 +189,12 @@ export default function MapSearchBar({
         <div className="map-search-results">
           {results.map((feature, index) => {
             const { primary, secondary } = formatLocationText(feature);
+            const isSelected = index === selectedIndex;
+
             return (
               <div
                 key={feature.id || index}
-                className={`search-result-item ${
-                  index === selectedIndex ? "selected" : ""
-                }`}
+                className={`search-result-item ${isSelected ? "selected" : ""}`}
                 onClick={() => handleLocationSelect(feature)}
                 onMouseEnter={() => setSelectedIndex(index)}
               >
