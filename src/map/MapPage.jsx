@@ -17,18 +17,20 @@ import "../styles/pages/map/map-search-bar.css";
 import "../styles/pages/map/map-sidebar.css";
 import "../styles/pages/map/map-forms.css";
 
+const DEFAULT_LOCATION_TYPES = ["been_there", "want_to_go"];
+
 export default function MapPage() {
   const { token } = useAuth();
+
+  // State management
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
-  const [locationTypes, setLocationTypes] = useState([
-    "been_there",
-    "want_to_go",
-  ]);
+  const [locationTypes, setLocationTypes] = useState(DEFAULT_LOCATION_TYPES);
   const [searchResults, setSearchResults] = useState([]);
   const [selectedSearchResult, setSelectedSearchResult] = useState(null);
 
+  // Custom hooks
   const {
     mapContainer,
     map,
@@ -43,14 +45,18 @@ export default function MapPage() {
   const { pins, pinsLoading, pinsError, addPin, addingPin, handleDeletePin } =
     useMapPins(token, map);
 
+  // Update location types when pins change
   useEffect(() => {
-    if (pins && pins.length > 0) {
+    if (pins?.length > 0) {
       const uniqueTypes = [...new Set(pins.map((pin) => pin.locationType))];
-      const allTypes = [...new Set([...locationTypes, ...uniqueTypes])];
-      setLocationTypes(allTypes);
+      setLocationTypes((prev) => {
+        const allTypes = [...new Set([...prev, ...uniqueTypes])];
+        return allTypes;
+      });
     }
   }, [pins]);
 
+  // Map click handler
   const handleMapClick = useCallback((e) => {
     const { lng, lat } = e.lngLat;
     setSelectedLocation({ lng, lat });
@@ -58,12 +64,13 @@ export default function MapPage() {
     setShowAddForm(true);
   }, []);
 
+  // Add map click handler when map is loaded
   useEffect(() => {
     if (!mapLoaded) return;
-
     addClickHandler(handleMapClick);
   }, [mapLoaded, addClickHandler, handleMapClick]);
 
+  // Pin management functions
   const handleAddPin = async (formData) => {
     if (!selectedLocation) return;
 
@@ -80,10 +87,7 @@ export default function MapPage() {
 
     try {
       await addPin(pinData);
-      setShowAddForm(false);
-      setSelectedLocation(null);
-      setSelectedSearchResult(null);
-      // Clear search results after adding pin
+      closeAddForm();
       setSearchResults([]);
     } catch (err) {
       console.error("Failed to add pin:", err);
@@ -92,28 +96,28 @@ export default function MapPage() {
   };
 
   const handleAddLocationType = async (newTypeName) => {
-    if (locationTypes.includes(newTypeName.toLowerCase())) {
+    const normalizedName = newTypeName.toLowerCase().replace(/\s+/g, "_");
+
+    if (locationTypes.includes(normalizedName)) {
       throw new Error("This category already exists");
     }
-    const newType = newTypeName.toLowerCase().replace(/\s+/g, "_");
-    setLocationTypes((prev) => [...prev, newType]);
 
-    return newType;
+    setLocationTypes((prev) => [...prev, normalizedName]);
+    return normalizedName;
   };
 
   const handleDeleteLocationType = async (locationType) => {
     try {
-      // First, delete all pins of this type
+      // Delete all pins of this type
       const pinsToDelete = pins.filter(
         (pin) => pin.locationType === locationType
       );
 
-      // Delete each pin
       for (const pin of pinsToDelete) {
         await handleDeletePin(pin.id);
       }
 
-      // Remove the location type from the list
+      // Remove the location type
       setLocationTypes((prev) => prev.filter((type) => type !== locationType));
     } catch (error) {
       console.error("Failed to delete location type:", error);
@@ -121,6 +125,16 @@ export default function MapPage() {
     }
   };
 
+  const handleSidebarDeletePin = async (pinId) => {
+    try {
+      await handleDeletePin(pinId);
+    } catch (error) {
+      console.error("Error deleting pin from sidebar:", error);
+      alert("Failed to delete location. Please try again.");
+    }
+  };
+
+  // Navigation functions
   const flyToLocation = (lng, lat) => {
     if (map.current) {
       map.current.flyTo({
@@ -131,17 +145,13 @@ export default function MapPage() {
     }
   };
 
-  // Handle search bar location selection - only fly to location and show marker
+  // Search functions
   const handleSearchLocationSelect = (locationData) => {
-    // Fly to the selected location
     flyToLocation(locationData.lng, locationData.lat);
-
-    // Set as selected search result for highlighting
     setSelectedSearchResult(locationData);
 
-    // Create a single search result marker for the selected location
     const searchMarker = {
-      id: `search-selected`,
+      id: "search-selected",
       longitude: locationData.lng,
       latitude: locationData.lat,
       name: locationData.name || locationData.fullName,
@@ -152,9 +162,7 @@ export default function MapPage() {
     setSearchResults([searchMarker]);
   };
 
-  // Handle search results (show temporary markers)
   const handleSearchResult = (results) => {
-    // Convert search results to marker format
     const searchMarkers = results.map((result, index) => ({
       id: `search-${index}`,
       longitude: result.center[0],
@@ -163,6 +171,7 @@ export default function MapPage() {
       isSearchResult: true,
       searchData: result,
     }));
+
     setSearchResults(searchMarkers);
     setSelectedSearchResult(null);
   };
@@ -177,15 +186,18 @@ export default function MapPage() {
     setShowAddForm(true);
   };
 
-  const handleSidebarDeletePin = async (pinId) => {
-    try {
-      await handleDeletePin(pinId);
-    } catch (error) {
-      console.error("Error deleting pin from sidebar:", error);
-      alert("Failed to delete location. Please try again.");
-    }
+  // Form management
+  const closeAddForm = () => {
+    setShowAddForm(false);
+    setSelectedLocation(null);
+    setSelectedSearchResult(null);
   };
 
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => !prev);
+  };
+
+  // Error states
   if (!token) {
     return (
       <div className="map-page">
@@ -236,7 +248,7 @@ export default function MapPage() {
         pins={pins}
         pinsLoading={pinsLoading}
         collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        onToggleCollapse={toggleSidebar}
         onLocationClick={flyToLocation}
         onDeleteLocation={handleSidebarDeletePin}
         locationTypes={locationTypes}
@@ -246,11 +258,7 @@ export default function MapPage() {
 
       {showAddForm && (
         <AddPinModal
-          onClose={() => {
-            setShowAddForm(false);
-            setSelectedLocation(null);
-            setSelectedSearchResult(null);
-          }}
+          onClose={closeAddForm}
           onSubmit={handleAddPin}
           isLoading={addingPin}
           locationTypes={locationTypes}

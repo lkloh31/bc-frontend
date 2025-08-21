@@ -1,6 +1,11 @@
 import { useState, useMemo } from "react";
 import LocationList from "./LocationList";
 
+const CATEGORY_TYPES = {
+  BEEN_THERE: "been_there",
+  WANT_TO_GO: "want_to_go",
+};
+
 export default function MapSidebar({
   pins = [],
   pinsLoading = false,
@@ -16,7 +21,6 @@ export default function MapSidebar({
   const [newTypeName, setNewTypeName] = useState("");
 
   const categorizedPins = useMemo(() => {
-    // Don't categorize if still loading
     if (pinsLoading || !pins) {
       return {
         been_there: [],
@@ -32,15 +36,17 @@ export default function MapSidebar({
     };
 
     pins.forEach((pin) => {
-      if (pin.locationType === "been_there") {
+      const { locationType } = pin;
+
+      if (locationType === CATEGORY_TYPES.BEEN_THERE) {
         categories.been_there.push(pin);
-      } else if (pin.locationType === "want_to_go") {
+      } else if (locationType === CATEGORY_TYPES.WANT_TO_GO) {
         categories.want_to_go.push(pin);
       } else {
-        if (!categories.custom[pin.locationType]) {
-          categories.custom[pin.locationType] = [];
+        if (!categories.custom[locationType]) {
+          categories.custom[locationType] = [];
         }
-        categories.custom[pin.locationType].push(pin);
+        categories.custom[locationType].push(pin);
       }
     });
 
@@ -50,7 +56,8 @@ export default function MapSidebar({
   const customTypes = useMemo(
     () =>
       locationTypes.filter(
-        (type) => type !== "been_there" && type !== "want_to_go"
+        (type) =>
+          ![CATEGORY_TYPES.BEEN_THERE, CATEGORY_TYPES.WANT_TO_GO].includes(type)
       ),
     [locationTypes]
   );
@@ -92,16 +99,12 @@ export default function MapSidebar({
   const handleDeleteLocationType = async (locationType) => {
     const typePins = categorizedPins.custom[locationType] || [];
 
-    if (typePins.length > 0) {
-      const confirmMessage = `This category has ${typePins.length} location(s). Deleting it will also delete all locations in this category. Are you sure?`;
-      if (!window.confirm(confirmMessage)) {
-        return;
-      }
-    } else {
-      if (!window.confirm("Are you sure you want to delete this category?")) {
-        return;
-      }
-    }
+    const confirmMessage =
+      typePins.length > 0
+        ? `This category has ${typePins.length} location(s). Deleting it will also delete all locations in this category. Are you sure?`
+        : "Are you sure you want to delete this category?";
+
+    if (!window.confirm(confirmMessage)) return;
 
     try {
       await onDeleteLocationType(locationType);
@@ -111,35 +114,43 @@ export default function MapSidebar({
     }
   };
 
-  // Render loading state
-  if (pinsLoading) {
-    return (
-      <div className={`map-sidebar ${collapsed ? "collapsed" : ""}`}>
-        <div className="sidebar-header">
-          <div className="sidebar-title">My Places</div>
-          <button
-            className="sidebar-toggle"
-            onClick={onToggleCollapse}
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {collapsed ? "📌" : "→"}
-          </button>
-        </div>
+  const formatCategoryName = (locationType) =>
+    locationType
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
 
-        {!collapsed && (
-          <div className="sidebar-content">
-            <div className="map-section">
-              <div className="section-title">Loading...</div>
-              <div
-                style={{ textAlign: "center", padding: "20px", color: "#666" }}
-              >
-                Loading your locations...
-              </div>
+  const renderLoadingState = () => (
+    <div className={`map-sidebar ${collapsed ? "collapsed" : ""}`}>
+      <div className="sidebar-header">
+        <div className="sidebar-title">My Places</div>
+        <button
+          className="sidebar-toggle"
+          onClick={onToggleCollapse}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          type="button"
+        >
+          {collapsed ? "📌" : "→"}
+        </button>
+      </div>
+
+      {!collapsed && (
+        <div className="sidebar-content">
+          <div className="map-section">
+            <div className="section-title">Loading...</div>
+            <div
+              style={{ textAlign: "center", padding: "20px", color: "#666" }}
+            >
+              Loading your locations...
             </div>
           </div>
-        )}
-      </div>
-    );
+        </div>
+      )}
+    </div>
+  );
+
+  if (pinsLoading) {
+    return renderLoadingState();
   }
 
   return (
@@ -150,6 +161,7 @@ export default function MapSidebar({
           className="sidebar-toggle"
           onClick={onToggleCollapse}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          type="button"
         >
           {collapsed ? "📌" : "→"}
         </button>
@@ -163,7 +175,7 @@ export default function MapSidebar({
           </div>
           <LocationList
             pins={categorizedPins.been_there}
-            type="been_there"
+            type={CATEGORY_TYPES.BEEN_THERE}
             onLocationClick={onLocationClick}
             onDeleteLocation={handleDeletePin}
             locationTypes={locationTypes}
@@ -176,19 +188,17 @@ export default function MapSidebar({
           </div>
           <LocationList
             pins={categorizedPins.want_to_go}
-            type="want_to_go"
+            type={CATEGORY_TYPES.WANT_TO_GO}
             onLocationClick={onLocationClick}
             onDeleteLocation={handleDeletePin}
             locationTypes={locationTypes}
           />
         </div>
 
+        {/* Custom categories */}
         {customTypes.map((locationType) => {
           const typePins = categorizedPins.custom[locationType] || [];
-          const displayName = locationType
-            .split("_")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ");
+          const displayName = formatCategoryName(locationType);
 
           return (
             <div key={locationType} className="map-section custom-section">
@@ -201,6 +211,7 @@ export default function MapSidebar({
                   onClick={() => handleDeleteLocationType(locationType)}
                   aria-label={`Delete ${displayName} category`}
                   title={`Delete ${displayName} category`}
+                  type="button"
                 >
                   ×
                 </button>
@@ -216,11 +227,13 @@ export default function MapSidebar({
           );
         })}
 
+        {/* Add category section */}
         <div className="map-section add-type-section">
           {!showAddForm ? (
             <button
               className="add-type-btn"
               onClick={() => setShowAddForm(true)}
+              type="button"
             >
               + Add Category
             </button>

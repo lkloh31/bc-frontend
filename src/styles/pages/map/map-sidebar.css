@@ -1,19 +1,20 @@
-/* Floating sidebar */
+/* ===== FLOATING SIDEBAR ===== */
 .map-sidebar {
   position: absolute;
-  top: 130px;
-  right: 50px;
+  top: 150px;
+  right: 70px;
   width: 320px;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 180px);
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  z-index: 10;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 150;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .map-sidebar.collapsed {
@@ -27,10 +28,10 @@
 
 .map-sidebar.collapsed .sidebar-header {
   justify-content: center;
-  padding: 16px 10px;
+  padding: 12px 10px 5px 5px;
 }
 
-/* Sidebar header */
+/* ===== SIDEBAR HEADER ===== */
 .sidebar-header {
   display: flex;
   justify-content: space-between;
@@ -38,23 +39,26 @@
   padding: 16px 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 12px 12px 0 0;
 }
 
 .sidebar-title {
   font-weight: 600;
   font-size: 18px;
   color: #333;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .sidebar-toggle {
   background: none;
   border: none;
-  font-size: 37px;
+  font-size: 30px;
   cursor: pointer;
-  padding: 0;
+  padding: 0px;
   border-radius: 4px;
   color: #666;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
   min-width: 32px;
   display: flex;
   align-items: center;
@@ -64,9 +68,10 @@
 
 .sidebar-toggle:hover {
   background-color: rgba(0, 0, 0, 0.1);
+  color: #333;
 }
 
-/* Sidebar content */
+/* ===== SIDEBAR CONTENT ===== */
 .sidebar-content {
   flex: 1;
   overflow-y: auto;
@@ -89,9 +94,10 @@
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-family: "Courier New", Courier, monospace;
 }
 
-/* Section header with delete button for custom types */
+/* ===== SECTION HEADER WITH DELETE BUTTON ===== */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -107,9 +113,8 @@
 .delete-type-btn {
   background: none;
   border: none;
-  color: #7f8184;
+  color: #9ca3af;
   font-size: 18px;
-  font-weight: 400;
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -135,7 +140,7 @@
   background-color: rgba(239, 68, 68, 0.1);
 }
 
-/* Location lists */
+/* ===== LOCATION LISTS ===== */
 .location-list {
   max-height: 200px;
   overflow-y: auto;
@@ -148,13 +153,13 @@
   padding: 8px 12px;
   cursor: pointer;
   border-radius: 8px;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease;
   margin-bottom: 4px;
   position: relative;
 }
 
 .location-item:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .location-dot {
@@ -178,20 +183,21 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .location-rating {
   font-size: 12px;
   color: #f59e0b;
+  font-family: "Courier New", Courier, monospace;
 }
 
-/* Delete button */
+/* ===== DELETE BUTTON ===== */
 .delete-btn {
   background: none;
   border: none;
-  color: #7f8184;
+  color: #9ca3af;
   font-size: 18px;
-  font-weight: 400;
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -217,7 +223,7 @@
   background-color: rgba(239, 68, 68, 0.1);
 }
 
-/* Add category section */
+/* ===== ADD CATEGORY SECTION ===== */
 .add-type-section {
   margin-top: 16px;
   padding-top: 16px;
@@ -234,6 +240,7 @@
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .add-type-btn:hover {
@@ -262,11 +269,12 @@
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s ease;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .type-input:focus {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 1px #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .submit-arrow-btn {
@@ -302,6 +310,7 @@
   font-size: 12px;
   cursor: pointer;
   align-self: flex-start;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .cancel-btn:hover {
@@ -309,13 +318,13 @@
   text-decoration: underline;
 }
 
-/* Custom section styles */
+/* ===== CUSTOM SECTION STYLES ===== */
 .custom-section .section-title {
   color: #6366f1;
   text-transform: capitalize;
 }
 
-/* Map instructions */
+/* ===== MAP INSTRUCTIONS ===== */
 .map-instructions {
   padding: 16px 20px;
   background-color: rgba(59, 130, 246, 0.1);
@@ -324,4 +333,63 @@
   color: #1e40af;
   line-height: 1.4;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: "Courier New", Courier, monospace;
+}
+
+/* ===== RESPONSIVE SIDEBAR ===== */
+@media screen and (max-width: 1020px) {
+  .map-sidebar {
+    top: 110px;
+    max-height: calc(100vh - 130px);
+  }
+}
+
+@media screen and (max-width: 900px) and (max-height: 500px) {
+  .map-sidebar {
+    top: 85px;
+    max-height: calc(100vh - 105px);
+  }
+}
+
+@media (max-width: 768px) {
+  .map-sidebar {
+    right: 15px;
+    width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-sidebar {
+    top: 80px;
+    right: 10px;
+    width: 280px;
+    max-height: calc(100vh - 100px);
+  }
+
+  .sidebar-header {
+    padding: 12px 16px;
+  }
+
+  .map-section {
+    padding: 12px 16px;
+  }
+
+  .sidebar-title {
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .map-sidebar {
+    top: 70px;
+    right: 8px;
+    width: 260px;
+  }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .map-sidebar {
+    top: 70px;
+    max-height: calc(100vh - 90px);
+  }
 }

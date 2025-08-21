@@ -2,6 +2,12 @@ import { useEffect, useRef, useMemo, useCallback, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { generateMarkerConfigs } from "../utils/locationColors";
 
+const LOCATION_OPTIONS = {
+  enableHighAccuracy: true,
+  timeout: 10000,
+  maximumAge: 60000,
+};
+
 export default function MapContainer({
   mapContainer,
   mapboxToken,
@@ -10,7 +16,6 @@ export default function MapContainer({
   zoom,
   pins,
   searchResults = [],
-  // selectedSearchResult = null,
   mapLoaded,
   map,
   onDeletePin,
@@ -20,28 +25,62 @@ export default function MapContainer({
   // Current location state
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState("");
-  const userLocationMarker = useRef(null);
 
-  // Create a ref to store regular markers
+  // Live map coordinates
+  const [currentLng, setCurrentLng] = useState(lng);
+  const [currentLat, setCurrentLat] = useState(lat);
+  const [currentZoom, setCurrentZoom] = useState(zoom);
+
+  // Refs for tracking markers and data
+  const userLocationMarker = useRef(null);
   const markersRef = useRef(new Map());
-  // .. store Map of search result markers
   const searchMarkersRef = useRef(new Map());
-  // .. store previous pins array to detect changes and avoid unnecessary re-renders
   const lastPinsRef = useRef([]);
-  // .. store previous search results array to detect changes
   const lastSearchResultsRef = useRef([]);
 
-  // Create marker configs only when location type changes
-  const markerConfigs = useMemo(() => {
-    return generateMarkerConfigs(locationTypes);
-  }, [locationTypes]);
+  // Memoized data
+  const memoizedPins = useMemo(() => pins || [], [pins]);
+  const memoizedSearchResults = useMemo(
+    () => searchResults || [],
+    [searchResults]
+  );
+  const markerConfigs = useMemo(
+    () => generateMarkerConfigs(locationTypes),
+    [locationTypes]
+  );
 
-  // Current location functions
+  // Update live coordinates when map moves
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+
+    const updateCoordinates = () => {
+      const center = map.current.getCenter();
+      const mapZoom = map.current.getZoom();
+
+      setCurrentLng(Number(center.lng.toFixed(4)));
+      setCurrentLat(Number(center.lat.toFixed(4)));
+      setCurrentZoom(Number(mapZoom.toFixed(2)));
+    };
+
+    map.current.on("move", updateCoordinates);
+    map.current.on("zoom", updateCoordinates);
+    updateCoordinates();
+
+    return () => {
+      if (map.current) {
+        map.current.off("move", updateCoordinates);
+        map.current.off("zoom", updateCoordinates);
+      }
+    };
+  }, [map, mapLoaded]);
+
+  // Location error handler
   const showLocationError = useCallback((message) => {
     setLocationError(message);
     setTimeout(() => setLocationError(""), 3000);
   }, []);
 
+  // Get current location function
   const getCurrentLocation = useCallback(() => {
     if (!map.current || !navigator.geolocation) {
       showLocationError("Geolocation is not supported by this browser");
@@ -60,7 +99,7 @@ export default function MapContainer({
           userLocationMarker.current.remove();
         }
 
-        // Create a new marker for user location
+        // Create new marker for user location
         userLocationMarker.current = new mapboxgl.Marker({
           color: "#3b82f6",
           scale: 1.2,
@@ -84,71 +123,47 @@ export default function MapContainer({
         setLocationLoading(false);
       },
       (error) => {
-        let message = "Unable to get your location";
+        const errorMessages = {
+          [error.PERMISSION_DENIED]: "Location access denied by user",
+          [error.POSITION_UNAVAILABLE]: "Location information unavailable",
+          [error.TIMEOUT]: "Location request timed out",
+        };
 
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            message = "Location access denied by user";
-            break;
-          case error.POSITION_UNAVAILABLE:
-            message = "Location information unavailable";
-            break;
-          case error.TIMEOUT:
-            message = "Location request timed out";
-            break;
-        }
-
-        showLocationError(message);
+        showLocationError(
+          errorMessages[error.code] || "Unable to get your location"
+        );
         setLocationLoading(false);
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000,
-      }
+      LOCATION_OPTIONS
     );
   }, [map, showLocationError]);
 
-  // Memoize function to prevent unnecessary re-renders
+  // Close all popups function
   const closeAllPopups = useCallback(() => {
-    // Close all popups on reg markers and remove "selected" class
-    markersRef.current.forEach((marker) => {
-      if (marker.getPopup() && marker.getPopup().isOpen()) {
+    const allMarkers = [
+      ...markersRef.current.values(),
+      ...searchMarkersRef.current.values(),
+    ];
+
+    allMarkers.forEach((marker) => {
+      if (marker.getPopup()?.isOpen()) {
         marker.getPopup().remove();
       }
-      const markerElement = marker.getElement();
-      if (markerElement) {
-        markerElement.classList.remove("selected");
-      }
-    });
-    // .. do the same on search result markers
-    searchMarkersRef.current.forEach((marker) => {
-      if (marker.getPopup() && marker.getPopup().isOpen()) {
-        marker.getPopup().remove();
-      }
-      const markerElement = marker.getElement();
-      if (markerElement) {
-        markerElement.classList.remove("selected");
-      }
+      marker.getElement()?.classList.remove("selected");
     });
   }, []);
 
-  // Check if any popup is open across all markers
+  // Check if any popup is open
   const hasOpenPopup = useCallback(() => {
-    for (let marker of markersRef.current.values()) {
-      if (marker.getPopup() && marker.getPopup().isOpen()) {
-        return true;
-      }
-    }
-    for (let marker of searchMarkersRef.current.values()) {
-      if (marker.getPopup() && marker.getPopup().isOpen()) {
-        return true;
-      }
-    }
-    return false;
+    const allMarkers = [
+      ...markersRef.current.values(),
+      ...searchMarkersRef.current.values(),
+    ];
+
+    return allMarkers.some((marker) => marker.getPopup()?.isOpen());
   }, []);
 
-  //
+  // Expose functions to window for popup buttons
   useEffect(() => {
     window.closeAllPopups = closeAllPopups;
     window.hasOpenPopup = hasOpenPopup;
@@ -161,89 +176,92 @@ export default function MapContainer({
     };
   }, [closeAllPopups, hasOpenPopup, onDeletePin]);
 
-  // Memoize pins array, defaulting to empty array if pins is null/undefined
-  const memoizedPins = useMemo(() => pins || [], [pins]);
-  // .. do the same for search results array
-  const memoizedSearchResults = useMemo(
-    () => searchResults || [],
-    [searchResults]
-  );
-
-  // Create HTML content for reg pin popups
+  // Create popup HTML for regular pins
   const createPopupHTML = useCallback((pin, config) => {
-    // Generate rating HTML if the pin has rating
     const ratingHTML = pin.rating
-      ? `
-        <div class="popup-section">
-          <p><strong>Rating:</strong></p>
-          <div class="rating-display">
-            <span class="stars">${"★".repeat(pin.rating)}${"☆".repeat(
+      ? `<div class="popup-section">
+           <div class="rating-display">
+             <span class="stars">${"★".repeat(pin.rating)}${"☆".repeat(
           5 - pin.rating
         )}</span>
-            <span class="rating-number">${pin.rating}/5</span>
-          </div>
-        </div>
-      `
+           </div>
+         </div>`
       : "";
-    // Generate addess HTML is the pin has address
+
     const addressHTML = pin.address
-      ? `<div class="popup-section"><p><strong>Address:</strong> ${pin.address}</p></div>`
+      ? `<div class="popup-section"><p>${pin.address}</p></div>`
       : "";
-    // Generate notes HTML is the pin has notes
+
     const notesHTML = pin.notes
-      ? `<div class="popup-section"><p><strong>Notes:</strong> ${pin.notes}</p></div>`
+      ? `<div class="popup-section"><p>${pin.notes}</p></div>`
       : "";
 
     return `
       <div class="marker-popup">
         <h3>${pin.name}</h3>
+        ${ratingHTML}
         ${addressHTML}
         ${notesHTML}
-        ${ratingHTML}
-        <div class="popup-section">
-          <span class="type-badge" style="background-color: ${config.color}20; color: ${config.color}; border: 1px solid ${config.color}40;">
-            ${config.display}
-          </span>
-        </div>
-        <button onclick="window.deletePin(${pin.id})" class="delete-pin-btn">
-          Delete Location
+        <span class="type-badge" style="background-color: ${config.color}20; color: ${config.color}; border: 1px solid ${config.color}40;">
+          ${config.display}
+        </span>
+        <button onclick="window.deletePin(${pin.id})" class="tag-btn">
+          Delete
         </button>
       </div>
     `;
   }, []);
 
-  // Create HTML content for search result popups
+  // Create popup HTML for search results
   const createSearchPopupHTML = useCallback((searchMarker) => {
-    // Extract and format address from search data
     const address = searchMarker.searchData?.place_name || "";
-    const addressParts = address.split(", ");
-    const formattedAddress = addressParts.slice(1).join(", ");
+    const formattedAddress = address.split(", ").slice(1).join(", ");
 
     return `
       <div class="marker-popup search-popup">
         <h3>${searchMarker.name}</h3>
         ${
           formattedAddress
-            ? `<div class="popup-section"><p><strong>Address:</strong> ${formattedAddress}</p></div>`
+            ? `<div class="popup-section"><p>${formattedAddress}</p></div>`
             : ""
         }
-        <div class="popup-section">
-          <span class="type-badge" style="background-color: #3b82f620; color: #3b82f6; border: 1px solid #3b82f640;">
-            Search Result
-          </span>
-        </div>
+        <span class="type-badge" style="background-color: #3b82f620; color: #3b82f6; border: 1px solid #3b82f640;">
+          Search Result
+        </span>
         <button onclick="window.addSearchPin('${
           searchMarker.id
-        }')" class="add-pin-btn">
+        }')" class="tag-btn search-popup">
           Add as Pin
         </button>
       </div>
     `;
   }, []);
 
+  // Create marker element
+  const createMarkerElement = (config, isSearchResult = false) => {
+    const el = document.createElement("div");
+    el.className = `custom-marker ${config.class}`;
+    el.style.setProperty("--marker-color", config.color);
+
+    if (isSearchResult) {
+      el.classList.add("search-marker-pulse");
+    }
+
+    return el;
+  };
+
+  // Add click handler to marker
+  const addMarkerClickHandler = (el, marker, closeAllPopups) => {
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeAllPopups();
+      el.classList.add("selected");
+      marker.getPopup().addTo(map.current);
+    });
+  };
+
   // Handle regular pins
   useEffect(() => {
-    // Return if map isn't ready/pins unavailable
     if (!map.current || !mapLoaded || !memoizedPins) return;
 
     // Check if pins changed
@@ -253,29 +271,24 @@ export default function MapContainer({
         (pin, index) =>
           !memoizedPins[index] || pin.id !== memoizedPins[index].id
       );
+
     if (!pinsChanged) return;
 
-    // Remove all existing markers from map/clear markers map
+    // Clear existing markers
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current.clear();
 
-    // Iterate though each pin to create markers
+    // Create new markers
     memoizedPins.forEach((pin) => {
-      // Convert coordinates to numbers
       const lng = parseFloat(pin.longitude);
       const lat = parseFloat(pin.latitude);
+
       if (isNaN(lng) || isNaN(lat)) return;
 
-      // Get marker config for this pin's location type, defaulting to been_there
       const config =
         markerConfigs[pin.locationType] || markerConfigs.been_there;
+      const el = createMarkerElement(config);
 
-      // Create DOM element for the marker
-      const el = document.createElement("div");
-      el.className = `custom-marker ${config.class}`;
-      el.style.setProperty("--marker-color", config.color);
-
-      // Create mapbox popup with custom setting and HTML content
       const popup = new mapboxgl.Popup({
         offset: 8,
         closeOnClick: false,
@@ -283,29 +296,17 @@ export default function MapContainer({
         className: "custom-popup",
       }).setHTML(createPopupHTML(pin, config));
 
-      // Create mapbox marker with custom element, set position, attach popup, add to map
       const marker = new mapboxgl.Marker(el)
         .setLngLat([lng, lat])
         .setPopup(popup)
         .addTo(map.current);
-      // Store marker in markers mapusing pin ID as key
+
       markersRef.current.set(pin.id, marker);
+      addMarkerClickHandler(el, marker, closeAllPopups);
 
-      // Only allow one popup at a time
-      el.addEventListener("click", (e) => {
-        e.stopPropagation();
-        closeAllPopups();
-        el.classList.add("selected");
-        marker.getPopup().addTo(map.current);
-      });
-
-      // Remove selected class when popup is closed
-      popup.on("close", () => {
-        el.classList.remove("selected");
-      });
+      popup.on("close", () => el.classList.remove("selected"));
     });
 
-    // Store copy of current pins to detect changes in next render
     lastPinsRef.current = [...memoizedPins];
   }, [
     memoizedPins,
@@ -335,21 +336,16 @@ export default function MapContainer({
     searchMarkersRef.current.forEach((marker) => marker.remove());
     searchMarkersRef.current.clear();
 
-    // Add new search markers
+    // Create new search markers
     memoizedSearchResults.forEach((searchMarker) => {
       const lng = parseFloat(searchMarker.longitude);
       const lat = parseFloat(searchMarker.latitude);
 
       if (isNaN(lng) || isNaN(lat)) return;
 
-      const el = document.createElement("div");
-      el.className = "custom-marker search-result-marker";
-      el.style.setProperty("--marker-color", "#3b82f6");
+      const config = { color: "#3b82f6", class: "search-result-marker" };
+      const el = createMarkerElement(config, true);
 
-      // Add pulsing animation for search results
-      el.classList.add("search-marker-pulse");
-
-      // Create popup for search marker
       const popup = new mapboxgl.Popup({
         offset: 8,
         closeOnClick: false,
@@ -357,7 +353,6 @@ export default function MapContainer({
         className: "custom-popup search-popup",
       }).setHTML(createSearchPopupHTML(searchMarker));
 
-      // Create and add marker to map
       const marker = new mapboxgl.Marker(el)
         .setLngLat([lng, lat])
         .setPopup(popup)
@@ -374,11 +369,10 @@ export default function MapContainer({
         }, 10);
       });
 
-      popup.on("close", () => {
-        el.classList.remove("selected");
-      });
+      popup.on("close", () => el.classList.remove("selected"));
     });
 
+    // Expose addSearchPin function
     window.addSearchPin = (searchMarkerId) => {
       const searchMarker = memoizedSearchResults.find(
         (m) => m.id === searchMarkerId
@@ -398,15 +392,18 @@ export default function MapContainer({
     onSearchMarkerClick,
   ]);
 
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current.clear();
       searchMarkersRef.current.forEach((marker) => marker.remove());
       searchMarkersRef.current.clear();
+
       if (userLocationMarker.current) {
         userLocationMarker.current.remove();
       }
+
       if (window.addSearchPin) {
         delete window.addSearchPin;
       }
@@ -432,11 +429,12 @@ export default function MapContainer({
         onClick={getCurrentLocation}
         disabled={locationLoading}
         title="Go to current location"
+        type="button"
       >
         {locationLoading ? (
-          <div className="spinner"></div>
+          <div className="spinner" />
         ) : (
-          <span>{locationError ? "❌" : "📍"}</span>
+          <span>{locationError ? "⌘" : "➢"}</span>
         )}
       </button>
 
@@ -445,7 +443,7 @@ export default function MapContainer({
       )}
 
       <div className="map-info">
-        Lng: {lng} | Lat: {lat} | Zoom: {zoom}
+        Lng: {currentLng} | Lat: {currentLat} | Zoom: {currentZoom}
       </div>
     </div>
   );
